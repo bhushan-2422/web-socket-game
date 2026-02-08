@@ -19,7 +19,7 @@ export class PreloadScene extends Phaser.Scene{
             frameWidth: 64,
             frameHeight: 88
         })
-        this.load.spritesheet(CHARACTER_ASSET_KEY.PLAYER,'src/assets/images/parabellum-games/characters.png',{
+        this.load.spritesheet(CHARACTER_ASSET_KEY.NPC,'src/assets/images/parabellum-games/characters.png',{
             frameWidth: 16,
             frameHeight: 16
         })

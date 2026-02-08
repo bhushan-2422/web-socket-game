@@ -2,6 +2,7 @@ import Phaser from "./lib/phaser.js"
 import { PreloadScene } from "./scenes/preload-scene.js"
 import { SCENE_KEYS } from "./scenes/scene-keys.js";
 import { WorldScene } from "./scenes/world-scene.js";
+import { socket } from "./lib/socket.js";
 
 const game = new Phaser.Game({
     type: Phaser.CANVAS,
