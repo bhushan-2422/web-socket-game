@@ -1,5 +1,4 @@
 import { DIRECTION } from "../../common/direction.js";
-import { getTargetPostionAndDirectionFromGameObject } from "../../utils/grid-utils.js";
 
 export class Character {
   _scene;
@@ -14,84 +13,68 @@ export class Character {
     this._scene = config.scene;
     this._direction = config.direction;
     this._isMoving = false;
-    this._targetPosition = {...config.position}
-    this._previousTargetPosition = {...config.position}
-    this._phaserGameObject = this._scene.add.sprite(
-      config.position.x,
-      config.position.y,
-      config.assetKey,
-      config.assetFrame || 0,
-    ).setOrigin(0);
+    this._targetPosition = { ...config.position };
+    this._previousTargetPosition = { ...config.position };
+    this._phaserGameObject = this._scene.add
+      .sprite(
+        config.position.x,
+        config.position.y,
+        config.assetKey,
+        config.assetFrame || 0,
+      )
+      .setOrigin(0);
 
-    this._spriteGridMovementFinishedCallback = config.spriteGridMovementFinishedCallback;
+    this._spriteGridMovementFinishedCallback =
+      config.spriteGridMovementFinishedCallback;
   }
 
   //boolean
-  get isMoving(){
+  get isMoving() {
     return this._isMoving;
   }
 
   //direction
-  get direction(){
+  get direction() {
     return this._direction;
   }
 
-  moveCharacter(direction){
-    if(this._isMoving){
-      return;
-    }
-    this._moveSprite(direction)
-    
-  }
 
-  _moveSprite(direction){
-    this._direction = direction;
-    if(this._isBlockingTile()){
+  animateTo(x, y, direction) {
+    if (direction == DIRECTION.NONE) {
       return;
     }
 
-    this._isMoving = true;
-    this.#handleSpriteMovement()
-  }
-  _isBlockingTile(){
-    if(this._direction == DIRECTION.NONE){
-      return;
-    }
-    //colision logic
-    return false;
-  }
-
-  #handleSpriteMovement(){
-    if(this._direction == DIRECTION.NONE){
-      return;
-    }
-
-    const updatePosition = getTargetPostionAndDirectionFromGameObject(this._targetPosition, this._direction)
-    this._previousTargetPosition = {...this._targetPosition}
-    this._targetPosition.x = updatePosition.x;
-    this._targetPosition.y = updatePosition.y
+    this._previousTargetPosition = { ...this._targetPosition };
+    this._targetPosition.x = x;
+    this._targetPosition.y = y;
 
     this._scene.add.tween({
       delay: 0,
       duration: 600,
-      y:{
+      y: {
         from: this._phaserGameObject.y,
         start: this._phaserGameObject.y,
-        to: this._targetPosition.y
+        to: this._targetPosition.y,
       },
-      x:{
+      x: {
         from: this._phaserGameObject.x,
         start: this._phaserGameObject.x,
-        to: this._targetPosition.x
+        to: this._targetPosition.x,
       },
       targets: this._phaserGameObject,
-      onComplete: () =>{
+
+      onComplete: () => {
+        this._direction = DIRECTION.NONE
         this._isMoving = false;
-        this._previousTargetPosition = {...this._targetPosition};
-        if(this._spriteGridMovementFinishedCallback){
-          this._spriteGridMovementFinishedCallback()
+        this._previousTargetPosition = { ...this._targetPosition };
+        if (this._spriteGridMovementFinishedCallback) {
+          this._spriteGridMovementFinishedCallback();
         }
-      }
-    })
+      },
+    });
+  }
+
+  destroy() {
+    this._phaserGameObject.destroy();
   }
 }
