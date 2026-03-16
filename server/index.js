@@ -43,8 +43,10 @@ io.on("connection",(socket)=>{
         y:64,
         direction: "DOWN"
     }
-
-    io.emit("state_update", players);
+    socket.on("player-join",({name})=>{
+      io.emit("state_update", players);
+    })
+    
 
     socket.on("move_request",({direction}) =>{
         const player = players[socket.id];

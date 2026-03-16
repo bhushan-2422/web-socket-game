@@ -27,6 +27,8 @@ export class WorldScene extends Phaser.Scene {
     this.add.image(0, 0, WORLD_ASSET_KEYS.WORLD_BACKGROUND, 0).setOrigin(0);
     this.#controls = new Controls(this);
 
+    socket.emit("player-join",{name:"viking"})
+
     socket.on("state_update", (players) => {
       console.log(players);
       this.syncPlayers(players);
