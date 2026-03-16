@@ -24,6 +24,8 @@ export class WorldScene extends Phaser.Scene {
   }
 
   create() {
+
+    this.cameras.main.setBounds(0,0,2048,2048);
     this.add.image(0, 0, WORLD_ASSET_KEYS.WORLD_BACKGROUND, 0).setOrigin(0);
     this.#controls = new Controls(this);
 
@@ -37,6 +39,8 @@ export class WorldScene extends Phaser.Scene {
     socket.on("player_joined", (player) => {
       console.log("player joined");
     });
+
+    
   }
 
   update() {
@@ -59,6 +63,8 @@ export class WorldScene extends Phaser.Scene {
         this.#players.set(id, newPlayer);
         if (id == socket.id) {
           this.#Localplayer = newPlayer;
+
+          this.cameras.main.startFollow(this.#Localplayer._phaserGameObject) // camera movemmets
         }
       } else {
    

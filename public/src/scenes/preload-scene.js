@@ -13,7 +13,7 @@ export class PreloadScene extends Phaser.Scene{
     preload(){
         console.log("preload")
         //LOAD WORLD ASSETS
-        this.load.image(WORLD_ASSET_KEYS.WORLD_BACKGROUND,'src/assets/images/monster-tamer/map/level_background.png')
+        this.load.image(WORLD_ASSET_KEYS.WORLD_BACKGROUND,'src/assets/images/monster-tamer/map/map.png')
         //load character assets
         this.load.spritesheet(CHARACTER_ASSET_KEY.PLAYER,'src/assets/images/axulart/character/custom.png',{
             frameWidth: 64,
