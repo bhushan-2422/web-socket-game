@@ -43,6 +43,7 @@ io.on("connection",(socket)=>{
         y:64,
         direction: "DOWN"
     }
+    
     socket.on("player-join",({name})=>{
       io.emit("state_update", players);
     })

@@ -1,29 +1,46 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>project template</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
-        <style>
-            html,body, .container{
-                margin: 0;
-                height: 100vh;
-                width: 100vw;
-                overflow: hidden;
-            }
-        </style>
-        <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
-    </head>
-    <body>
-        <div class="container" id="game-container">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>project template</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="" />
+    <style>
+      html,
+      body,
+      .container {
+        margin: 0;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+      }
+      /* .hidden {
+        display: none;
+      } */
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+  </head>
+  <body>
+    <div class="container hidden" id="game-container"></div>
 
-        </div>
+    <!-- <div class="joiner">
+      <form action="" id="create-room">
+        <label for="roomId">Enter room id</label><br />
+        <input type="text" id="roomId" /><br /><br />
 
-        <script src="/socket.io/socket.io.js"></script>
-        <script type="module" src="/src/main.js"></script>
-        
-    </body>
+        <label for="playerName">your name</label><br />
+        <input type="text" id="playerName" /><br /><br />
+
+        <label for="minPlayers">enter room size</label><br />
+        <input type="text" id="minPlayers" /><br><br>
+
+        <button type="submit">submit</button>
+      </form>
+    </div> -->
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>

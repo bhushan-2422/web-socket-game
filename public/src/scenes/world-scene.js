@@ -1,6 +1,7 @@
 import { DIRECTION } from "../common/direction.js";
 import Phaser from "../lib/phaser.js";
-import { socket } from "../lib/socket.js";
+// import { socket } from "../lib/socket.js";
+import socket from "../main.js";
 import { Controls } from "../utils/controls.js";
 import { Player } from "../world/characters/player.js";
 import { WORLD_ASSET_KEYS } from "./asset-keys.js";
