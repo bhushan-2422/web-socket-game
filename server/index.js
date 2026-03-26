@@ -24,13 +24,13 @@ const players = {}
 function calculateNextPosition(player, direction) {
   switch (direction) {
     case DIRECTION.UP:
-      return { x: player.x, y: player.y - TILE_SIZE };
+      return { x: player.currPosition.x, y: player.currPosition.y - TILE_SIZE };
     case DIRECTION.DOWN:
-      return { x: player.x, y: player.y + TILE_SIZE };
+      return { x: player.currPosition.x, y: player.currPosition.y + TILE_SIZE };
     case DIRECTION.LEFT:
-      return { x: player.x - TILE_SIZE, y: player.y };
+      return { x: player.currPosition.x - TILE_SIZE, y: player.currPosition.y };
     case DIRECTION.RIGHT:
-      return { x: player.x + TILE_SIZE, y: player.y };
+      return { x: player.currPosition.x + TILE_SIZE, y: player.currPosition.y };
   }
 }
 
@@ -39,6 +39,7 @@ io.on("connection",(socket)=>{
     console.log("user connected");
     players[socket.id] = {
         id: socket.id,
+        currPosition: {x:1600, y: 1600},
         x: 1600,
         y:1600,
         direction: "DOWN"
@@ -49,11 +50,15 @@ io.on("connection",(socket)=>{
     })
     
 
-    socket.on("move_request",({direction}) =>{
+    socket.on("move_request",({currPosition, direction}) =>{
         const player = players[socket.id];
         if(!player) return;
         
+        player.currPosition.x = currPosition.x;
+        player.currPosition.y = currPosition.y;
+        
         const {x, y} = calculateNextPosition(player, direction);
+        
         if(player.x == x && player.y == y )return;
         player.x = x;
         player.y = y;

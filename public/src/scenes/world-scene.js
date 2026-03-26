@@ -53,8 +53,7 @@ export class WorldScene extends Phaser.Scene {
     socket.emit("player-join",{name:"viking"})
 
     socket.on("state_update", (players) => {
-      console.log(players);
-      this.syncPlayers(players);
+      this.syncPlayers(players, collisionLayer);
     });
 
     socket.on("player_joined", (player) => {
@@ -69,17 +68,18 @@ export class WorldScene extends Phaser.Scene {
 
     const selectedDirection = this.#controls.getDirectionKeyJustPressed();
     if (selectedDirection != DIRECTION.NONE) {
-      socket.emit("move_request", { direction: selectedDirection });
+      socket.emit("move_request", { currPosition: this.#Localplayer._targetPosition, direction: selectedDirection });
     }
   }
 
-  syncPlayers(serverPlayers) {
+  syncPlayers(serverPlayers, collisionLayer) {
     for (const [id, data] of Object.entries(serverPlayers)) {
       if (!this.#players.has(id)) {
         const newPlayer = new Player({
           scene: this,
           position: { x: data.x, y: data.y },
           direction: data.direction || DIRECTION.DOWN,
+          collisionLayer: collisionLayer
           
         });
         this.#players.set(id, newPlayer);

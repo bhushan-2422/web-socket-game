@@ -49,14 +49,14 @@ export class Character {
     if (direction == DIRECTION.NONE) {
       return;
     }
-
+    if(this._isBlockingTile(x,y)){
+      return;
+    }
     this._previousTargetPosition = { ...this._targetPosition };
     this._targetPosition.x = x;
     this._targetPosition.y = y;
 
-    if(this._isBlockingTile(x,y)){
-      return;
-    }
+    
 
     this._scene.add.tween({
       delay: 0,
