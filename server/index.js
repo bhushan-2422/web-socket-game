@@ -49,6 +49,16 @@ io.on("connection",(socket)=>{
       io.emit("state_update", players);
     })
     
+    //<------------IMP----------------->
+    //as collision detection is in user side so how will i handle movement from server
+    //as when i click arrow server calculates next position and stores that states in player DS
+    //so initialize new property i.e currPosition
+    //when server calculates next postion it is based on currPosition
+    //and send new x and y to user
+    //user validates collision logic and if not collidable then ubdate target position
+    //and send that target postion to server as currPosition
+    //if object was collidable then currPosition does not change and again server calculates next positon 
+    //on the basis of currPosition
 
     socket.on("move_request",({currPosition, direction}) =>{
         const player = players[socket.id];
@@ -56,7 +66,7 @@ io.on("connection",(socket)=>{
         
         player.currPosition.x = currPosition.x;
         player.currPosition.y = currPosition.y;
-        
+
         const {x, y} = calculateNextPosition(player, direction);
         
         if(player.x == x && player.y == y )return;
