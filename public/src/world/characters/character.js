@@ -8,6 +8,7 @@ export class Character {
   _targetPosition;
   _previousTargetPosition;
   _spriteGridMovementFinishedCallback;
+  _collisionLayer;
 
   constructor(config) {
     this._scene = config.scene;
@@ -15,6 +16,7 @@ export class Character {
     this._isMoving = false;
     this._targetPosition = { ...config.position };
     this._previousTargetPosition = { ...config.position };
+    this._collisionLayer = config.collisionLayer 
     this._phaserGameObject = this._scene.add
       .sprite(
         config.position.x,
@@ -38,7 +40,11 @@ export class Character {
     return this._direction;
   }
 
+  _isBlockingTile(x,y){
+    const updatedPosition = {x,y}
+    return this.#doesPositionCollideWithCollisionLayer(updatedPosition);
 
+  }
   animateTo(x, y, direction) {
     if (direction == DIRECTION.NONE) {
       return;
@@ -47,6 +53,10 @@ export class Character {
     this._previousTargetPosition = { ...this._targetPosition };
     this._targetPosition.x = x;
     this._targetPosition.y = y;
+
+    if(this._isBlockingTile(x,y)){
+      return;
+    }
 
     this._scene.add.tween({
       delay: 0,
@@ -72,6 +82,17 @@ export class Character {
         }
       },
     });
+  }
+
+  #doesPositionCollideWithCollisionLayer(position){
+    if(!this._collisionLayer){
+      console.log("character]error:  no collision layer");
+      return false
+    }
+
+    const {x,y} = position;
+    const tile = this._collisionLayer.getTileAtWorldXY(x,y, true);
+    return tile.index !== -1;
   }
 
   destroy() {

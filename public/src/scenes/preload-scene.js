@@ -14,6 +14,9 @@ export class PreloadScene extends Phaser.Scene{
         console.log("preload")
         //LOAD WORLD ASSETS
         this.load.image(WORLD_ASSET_KEYS.WORLD_BACKGROUND,'src/assets/images/monster-tamer/map/map5.png')
+        this.load.tilemapTiledJSON(WORLD_ASSET_KEYS.WORLD_MAIN_LEVEL,'src/assets/data/myMap.json')
+        this.load.image(WORLD_ASSET_KEYS.WORLD_COLLISION, "src/assets/images/monster-tamer/map/collision.png")
+
         //load character assets
         this.load.spritesheet(CHARACTER_ASSET_KEY.PLAYER,'src/assets/images/axulart/character/custom.png',{
             frameWidth: 64,
@@ -23,6 +26,8 @@ export class PreloadScene extends Phaser.Scene{
             frameWidth: 16,
             frameHeight: 16
         })
+
+        
 
     }
 

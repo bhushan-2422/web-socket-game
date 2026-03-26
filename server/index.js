@@ -39,8 +39,8 @@ io.on("connection",(socket)=>{
     console.log("user connected");
     players[socket.id] = {
         id: socket.id,
-        x: 64,
-        y:64,
+        x: 1600,
+        y:1600,
         direction: "DOWN"
     }
     
