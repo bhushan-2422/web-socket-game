@@ -15,17 +15,21 @@
         height: 100vh;
         width: 100vw;
         overflow: hidden;
+        
       }
-      /* .hidden {
-        display: none;
+      /* body{
+        background-color: black;
       } */
+      .hidden {
+        display: none;
+      }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
   </head>
   <body>
     <div class="container hidden" id="game-container"></div>
 
-    <!-- <div class="joiner">
+    <div id="joiner">
       <form action="" id="create-room">
         <label for="roomId">Enter room id</label><br />
         <input type="text" id="roomId" /><br /><br />
@@ -37,8 +41,12 @@
         <input type="text" id="minPlayers" /><br><br>
 
         <button type="submit">submit</button>
+        <br><br>
+        <div id="players">
+
+        </div>
       </form>
-    </div> -->
+    </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script type="module" src="/src/main.js"></script>

@@ -1,8 +1,9 @@
 import { DIRECTION } from "../common/direction.js";
 import { TILED_COLLISION_LAYER_ALPHA } from "../config.js";
 import Phaser from "../lib/phaser.js";
+import { getSocket } from "../lib/socket.js";
 // import { socket } from "../lib/socket.js";
-import socket from "../main.js";
+// import socket from "../main.js";
 import { Controls } from "../utils/controls.js";
 import { Player } from "../world/characters/player.js";
 import { WORLD_ASSET_KEYS } from "./asset-keys.js";
@@ -26,19 +27,26 @@ export class WorldScene extends Phaser.Scene {
   }
 
   create() {
-
-    this.cameras.main.setBounds(0,0,3200,3200);
-    
-
-    //create a tile map object to use other utility methods
-    const map = this.make.tilemap({key: WORLD_ASSET_KEYS.WORLD_MAIN_LEVEL})
-    const collisionTiles = map.addTilesetImage('collision', WORLD_ASSET_KEYS.WORLD_COLLISION)
-    if(!collisionTiles){
-      console.log("worldScene : create] error while creatting collsison tiles")
+    const socket = getSocket();
+    if (!socket) {
+      console.log("socket is not initiated");
+      return;
     }
 
-    const collisionLayer = map.createLayer('Collision',collisionTiles , 0,0);
-    if(!collisionLayer){
+    this.cameras.main.setBounds(0, 0, 3200, 3200);
+
+    //create a tile map object to use other utility methods
+    const map = this.make.tilemap({ key: WORLD_ASSET_KEYS.WORLD_MAIN_LEVEL });
+    const collisionTiles = map.addTilesetImage(
+      "collision",
+      WORLD_ASSET_KEYS.WORLD_COLLISION,
+    );
+    if (!collisionTiles) {
+      console.log("worldScene : create] error while creatting collsison tiles");
+    }
+
+    const collisionLayer = map.createLayer("Collision", collisionTiles, 0, 0);
+    if (!collisionLayer) {
       console.log("worldScene: create] error while creating collision layer");
       return;
     }
@@ -46,58 +54,73 @@ export class WorldScene extends Phaser.Scene {
     this.add.image(0, 0, WORLD_ASSET_KEYS.WORLD_BACKGROUND, 0).setOrigin(0);
     this.#controls = new Controls(this);
 
-  
+    //shake the screen after sec 8-15
+    this.time.addEvent({
+      delay: Phaser.Math.Between(6000, 15000),
+      loop: true,
+      callback: () => {
+        this.cameras.main.shake(1000, 0.015);
+      },
+    });
 
     // this.physics.add.collider(this.#Localplayer, colision_layer );
 
-    socket.emit("player-join",{name:"viking"})
+    socket.emit("player-join");
 
     socket.on("state_update", (players) => {
-      this.syncPlayers(players, collisionLayer);
+      this.syncPlayers(players, collisionLayer, socket);
     });
 
     socket.on("player_joined", (player) => {
       console.log("player joined");
     });
-
-    
   }
 
   update() {
+    const socket = getSocket();
     if (!this.#Localplayer) return;
 
     const selectedDirection = this.#controls.getDirectionKeyJustPressed();
     if (selectedDirection != DIRECTION.NONE) {
-      socket.emit("move_request", { currPosition: this.#Localplayer._targetPosition, direction: selectedDirection });
+      socket.emit("move_request", {
+        currPosition: this.#Localplayer._targetPosition,
+        direction: selectedDirection,
+      });
     }
   }
 
-  syncPlayers(serverPlayers, collisionLayer) {
-    for (const [id, data] of Object.entries(serverPlayers)) {
+  
+
+  syncPlayers(serverPlayers, collisionLayer, socket) {
+    const incomingIds = new Set();
+
+    serverPlayers.forEach((data) => {
+      const id = data.id;
+      incomingIds.add(id);
+
       if (!this.#players.has(id)) {
         const newPlayer = new Player({
           scene: this,
           position: { x: data.x, y: data.y },
           direction: data.direction || DIRECTION.DOWN,
-          collisionLayer: collisionLayer
-          
+          collisionLayer: collisionLayer,
         });
-        this.#players.set(id, newPlayer);
-        if (id == socket.id) {
-          this.#Localplayer = newPlayer;
 
-          this.cameras.main.startFollow(this.#Localplayer._phaserGameObject) // camera movemmets
+        this.#players.set(id, newPlayer);
+
+        if (id === socket.id) {
+          this.#Localplayer = newPlayer;
+          this.cameras.main.startFollow(this.#Localplayer._phaserGameObject);
         }
       } else {
-   
         this.#players.get(id).animateTo(data.x, data.y, data.direction);
-        
       }
-    }
+    });
+
     for (const id of this.#players.keys()) {
-      if (!serverPlayers[id]) {
+      if (!incomingIds.has(id)) {
         const player = this.#players.get(id);
-        player.destroy(); // 🔥 REQUIRED
+        player.destroy();
         this.#players.delete(id);
       }
     }
