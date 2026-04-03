@@ -3,8 +3,9 @@ import { createServer } from "node:http";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Server } from "socket.io";
-import { DIRECTION } from "../public/src/common/direction.js";
-import { TILE_SIZE } from "../public/src/config.js";
+import { Player } from "./models/player.js";
+import { Room } from "./models/room.js";
+import { fireAndSmokeArray } from "./utils/damage.js";
 
 const app = express();
 const server = createServer(app);
@@ -20,21 +21,25 @@ app.get("/", (req, res) => {
   res.sendFile(join(__dirname, "../public/index.html"));
 });
 
-function calculateNextPosition(player, direction) {
-  switch (direction) {
-    case DIRECTION.UP:
-      return { x: player.currPosition.x, y: player.currPosition.y - TILE_SIZE };
-    case DIRECTION.DOWN:
-      return { x: player.currPosition.x, y: player.currPosition.y + TILE_SIZE };
-    case DIRECTION.LEFT:
-      return { x: player.currPosition.x - TILE_SIZE, y: player.currPosition.y };
-    case DIRECTION.RIGHT:
-      return { x: player.currPosition.x + TILE_SIZE, y: player.currPosition.y };
-  }
-}
+
 
 const players = {};
 const rooms = {};
+
+setInterval(() => {
+  const now = Date.now();
+
+  Object.values(rooms).forEach(room => {
+    room.players.forEach(player => {
+      player.checkDamage(now);
+    });
+
+    io.to(room.roomId).emit("state-update-damage", {
+      players: room.players
+    });
+  });
+
+}, 200);
 
 io.on("connection", (socket) => {
   console.log("user connected");
@@ -45,80 +50,41 @@ io.on("connection", (socket) => {
   });
 
   socket.on("create-room", ({ roomId, playerName, minPlayers }) => {
-    // create room if not exists
     if (!rooms[roomId]) {
-      rooms[roomId] = {
-        minPlayers,
-        players: [],
-        state: "waiting",
-      };
+      rooms[roomId] = new Room(roomId, minPlayers)
     }
-
     const room = rooms[roomId];
 
-    // ❌ prevent joining started game
     if (room.state === "playing") {
       socket.emit("error", "Game already started");
       return;
     }
 
-    // ❌ prevent duplicate join
-    if (room.players.find((p) => p.id === socket.id)) {
+    if (room.isPlayerExist(socket)) {
       return;
     }
 
-    // ✅ create player properly
-    const player = {
-      id: socket.id,
-      name: playerName,
-      currPosition: { x: 1600, y: 1600 },
-      x: 1600,
-      y: 1600,
-      direction: "DOWN",
-      roomId,
-    };
+    const player = new Player(socket, playerName, roomId);
 
     players[socket.id] = player;
     room.players.push(player);
 
     socket.join(roomId);
 
-    // waiting state
-    if (room.players.length < room.minPlayers) {
+    if (!room.isFilled()) {
       io.to(roomId).emit("waiting", room.players);
     }
-    // start game
+    
     else {
       room.state = "playing";
       io.to(roomId).emit("start-game", room.players);
     }
   });
 
-  //<------------IMP----------------->
-  //as collision detection is in user side so how will i handle movement from server
-  //as when i click arrow server calculates next position and stores that states in player DS
-  //so initialize new property i.e currPosition
-  //when server calculates next postion it is based on currPosition
-  //and send new x and y to user
-  //user validates collision logic and if not collidable then ubdate target position
-  //and send that target postion to server as currPosition
-  //if object was collidable then currPosition does not change and again server calculates next positon
-  //on the basis of currPosition
-
   socket.on("move_request", ({ currPosition, direction }) => {
     const player = players[socket.id];
     if (!player) return;
-
-    player.currPosition.x = currPosition.x;
-    player.currPosition.y = currPosition.y;
-
-    const { x, y } = calculateNextPosition(player, direction);
-
-    if (player.x == x && player.y == y) return;
-    player.x = x;
-    player.y = y;
-    player.direction = direction;
-
+    player.changePosition(currPosition, direction)
     const roomId = player.roomId;
     io.to(roomId).emit("state_update", rooms[roomId].players);
   });
