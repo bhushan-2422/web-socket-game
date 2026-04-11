@@ -9,6 +9,7 @@ export class Character {
   _previousTargetPosition;
   _spriteGridMovementFinishedCallback;
   _collisionLayer;
+  _health;
 
   constructor(config) {
     this._scene = config.scene;
@@ -16,7 +17,8 @@ export class Character {
     this._isMoving = false;
     this._targetPosition = { ...config.position };
     this._previousTargetPosition = { ...config.position };
-    this._collisionLayer = config.collisionLayer 
+    this._collisionLayer = config.collisionLayer;
+    this._health = config.health
     this._phaserGameObject = this._scene.add
       .sprite(
         config.position.x,
@@ -45,6 +47,15 @@ export class Character {
     return this.#doesPositionCollideWithCollisionLayer(updatedPosition);
 
   }
+
+  checkDamage(health){
+    if(health < this._health){
+      this._health = health;
+      return true;
+    }
+    return false;
+  }
+  
   animateTo(x, y, direction) {
     if (direction == DIRECTION.NONE) {
       return;

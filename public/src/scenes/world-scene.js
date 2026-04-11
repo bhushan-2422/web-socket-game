@@ -89,8 +89,6 @@ export class WorldScene extends Phaser.Scene {
     }
   }
 
-  
-
   syncPlayers(serverPlayers, collisionLayer, socket) {
     const incomingIds = new Set();
 
@@ -104,6 +102,7 @@ export class WorldScene extends Phaser.Scene {
           position: { x: data.x, y: data.y },
           direction: data.direction || DIRECTION.DOWN,
           collisionLayer: collisionLayer,
+          health: data.health,
         });
 
         this.#players.set(id, newPlayer);
@@ -113,6 +112,14 @@ export class WorldScene extends Phaser.Scene {
           this.cameras.main.startFollow(this.#Localplayer._phaserGameObject);
         }
       } else {
+        if (id === socket.id) {
+          const tookDamage = this.#Localplayer.checkDamage(data.health);
+
+          if (tookDamage) {
+            
+            this.cameras.main.flash(200, 255, 0, 0);
+          }
+        }
         this.#players.get(id).animateTo(data.x, data.y, data.direction);
       }
     });

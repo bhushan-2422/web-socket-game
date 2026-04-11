@@ -34,9 +34,10 @@ setInterval(() => {
       player.checkDamage(now);
     });
 
-    io.to(room.roomId).emit("state-update-damage", {
+    io.to(room.roomId).emit("state_update", {
       players: room.players
     });
+    
   });
 
 }, 200);

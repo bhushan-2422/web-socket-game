@@ -1,7 +1,7 @@
-{
-    "compilerOptions": {
-        "module": "es6",
-        "target": "es6",
-        "checkJs": true
-    }
-}
+// {
+//     "compilerOptions": {
+//         "module": "es6",
+//         "target": "es6",
+//         "checkJs": true
+//     }
+// }
