@@ -63,6 +63,13 @@ export class WorldScene extends Phaser.Scene {
       },
     });
 
+    this.dangerOverlay = this.add.graphics();
+
+    this.dangerOverlay.fillStyle(0xff0000, 0); // start invisible
+    this.dangerOverlay.fillRect(0, 0, this.scale.width, this.scale.height);
+
+    this.dangerOverlay.setScrollFactor(0);
+    this.dangerOverlay.setDepth(9999);
 
     // this.physics.add.collider(this.#Localplayer, colision_layer );
 
@@ -115,7 +122,40 @@ export class WorldScene extends Phaser.Scene {
       } else {
         if (id === socket.id) {
           this.#Localplayer.setHealth(data.health);
-          
+          const isDamage = data.tookDamage;
+          const isDangerActive = this.#Localplayer._isDangerActive;
+          console.log(data);
+          if (isDamage && !isDangerActive) {
+            console.log("ENTER DANGER");
+
+            this.#Localplayer._isDangerActive = true;
+
+            this.tweens.add({
+              targets: this.dangerOverlay,
+              alpha: 0.5,
+              duration: 200,
+              onUpdate: (tween) => {
+                this.dangerOverlay.clear();
+                this.dangerOverlay.fillStyle(0xff0000, tween.targets[0].alpha);
+                this.dangerOverlay.fillRect(
+                  0,
+                  0,
+                  this.scale.width,
+                  this.scale.height,
+                );
+              },
+            });
+          } else if (!isDamage && isDangerActive) {
+            console.log("EXIT DANGER");
+
+            this.#Localplayer._isDangerActive = false;
+
+            this.tweens.add({
+              targets: this.dangerOverlay,
+              alpha: 0,
+              duration: 200,
+            });
+          }
         }
         this.#players.get(id).animateTo(data.x, data.y, data.direction);
       }

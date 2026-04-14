@@ -67,19 +67,19 @@ class Player {
         this.currPosition.y >= fireAndSmoke.y * TILE_SIZE &&
         this.currPosition.x <
           (fireAndSmoke.x + fireAndSmoke.width) * TILE_SIZE &&
-        this.currPosition.y <
-          (fireAndSmoke.y + fireAndSmoke.height) * TILE_SIZE
+        this.currPosition.y < (fireAndSmoke.y + fireAndSmoke.height) * TILE_SIZE
       ) {
+        this.tookDamage = true;
         if (now - this.lastDamageTime >= 1000) {
           this.health -= fireAndSmoke.damage;
-          this.tookDamage = true;
           this.lastDamageTime = now;
-        }else{
-          this.tookDamage = false;
         }
+        break;
+      } else {
+        this.tookDamage = false;
       }
-      this.health = Math.max(this.health, 0);
     }
+    this.health = Math.max(this.health, 0);
   }
 }
 

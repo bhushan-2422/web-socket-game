@@ -26,21 +26,20 @@ app.get("/", (req, res) => {
 const players = {};
 const rooms = {};
 
-setInterval(() => {
-  const now = Date.now();
+// setInterval(() => {
+//   const now = Date.now();
 
-  Object.values(rooms).forEach(room => {
-    room.players.forEach(player => {
-      player.checkDamage(now);
-    });
+//   Object.values(rooms).forEach(room => {
+//     room.players.forEach(player => {
+      
+//       player.checkDamage(now);
+//     });
 
-    io.to(room.roomId).emit("state_update", {
-      players: room.players
-    });
+//     io.to(room.roomId).emit("state_update", room.players);
     
-  });
+//   });
 
-}, 200);
+// }, 200);
 
 io.on("connection", (socket) => {
   console.log("user connected");
@@ -85,7 +84,11 @@ io.on("connection", (socket) => {
   socket.on("move_request", ({ currPosition, direction }) => {
     const player = players[socket.id];
     if (!player) return;
+
     player.changePosition(currPosition, direction)
+    const now = Date.now();
+    player.checkDamage(now);
+
     const roomId = player.roomId;
     io.to(roomId).emit("state_update", rooms[roomId].players);
   });

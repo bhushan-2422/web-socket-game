@@ -10,7 +10,7 @@ export class Character {
   _spriteGridMovementFinishedCallback;
   _collisionLayer;
   _health;
-  _dangerActive;
+  _isDangerActive;
 
   constructor(config) {
     this._scene = config.scene;
@@ -20,7 +20,7 @@ export class Character {
     this._previousTargetPosition = { ...config.position };
     this._collisionLayer = config.collisionLayer;
     this._health = config.health;
-    this._dangerActive = false;
+    this._isDangerActive = false;
     this._phaserGameObject = this._scene.add
       .sprite(
         config.position.x,
@@ -57,7 +57,7 @@ export class Character {
     return false;
   }
 
-
+  
 
   animateTo(x, y, direction) {
     if (direction == DIRECTION.NONE) {
