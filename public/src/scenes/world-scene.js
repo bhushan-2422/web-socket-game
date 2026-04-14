@@ -63,6 +63,7 @@ export class WorldScene extends Phaser.Scene {
       },
     });
 
+
     // this.physics.add.collider(this.#Localplayer, colision_layer );
 
     socket.emit("player-join");
@@ -113,12 +114,8 @@ export class WorldScene extends Phaser.Scene {
         }
       } else {
         if (id === socket.id) {
-          const tookDamage = this.#Localplayer.checkDamage(data.health);
-
-          if (tookDamage) {
-            
-            this.cameras.main.flash(200, 255, 0, 0);
-          }
+          this.#Localplayer.setHealth(data.health);
+          
         }
         this.#players.get(id).animateTo(data.x, data.y, data.direction);
       }

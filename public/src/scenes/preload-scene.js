@@ -13,7 +13,7 @@ export class PreloadScene extends Phaser.Scene{
     preload(){
         console.log("preload")
         //LOAD WORLD ASSETS
-        this.load.image(WORLD_ASSET_KEYS.WORLD_BACKGROUND,'src/assets/images/monster-tamer/map/map5.png')
+        this.load.image(WORLD_ASSET_KEYS.WORLD_BACKGROUND,'src/assets/images/monster-tamer/map/firemap.png')
         this.load.tilemapTiledJSON(WORLD_ASSET_KEYS.WORLD_MAIN_LEVEL,'src/assets/data/myMap.json')
         this.load.image(WORLD_ASSET_KEYS.WORLD_COLLISION, "src/assets/images/monster-tamer/map/collision.png")
 

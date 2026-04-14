@@ -1,13 +1,23 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>project template</title>
-    <meta name="description" content="" />
+    <title>Game Lobby</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       html,
       body,
       .container {
@@ -15,7 +25,6 @@
         height: 100vh;
         width: 100vw;
         overflow: hidden;
-        
       }
       /* body{
         background-color: black;
@@ -23,29 +32,237 @@
       .hidden {
         display: none;
       }
+
+      body {
+        background: #080c14;
+        color: #cfe4ff;
+        font-family: "Rajdhani", sans-serif;
+        overflow: hidden;
+      }
+
+      /* VIDEO */
+      .video-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+        filter: brightness(0.35) contrast(1.2);
+      }
+
+      /* GRID */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(0, 229, 255, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 229, 255, 0.05) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+
+      /* PAGE */
+      .page {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* TITLE */
+      .logo-tag {
+        font-family: "Share Tech Mono";
+        color: #00e5ff;
+        border: 1px solid #00e5ff;
+        padding: 3px 10px;
+        margin-bottom: 10px;
+        font-size: 12px;
+      }
+
+      h1 {
+        font-family: "Orbitron";
+        font-size: 60px;
+        color: #fff;
+        text-shadow: 0 0 20px #00e5ff;
+      }
+      h1 span {
+        color: #ff6d00;
+        text-shadow: 0 0 20px #ff6d00;
+      }
+
+      .subtitle {
+        margin: 10px 0 30px;
+        letter-spacing: 2px;
+      }
+
+      /* CARD */
+      .card {
+        width: 420px;
+        background: rgba(10, 20, 40, 0.85);
+        border: 1px solid #1e3a5f;
+        padding: 30px;
+        position: relative;
+      }
+
+      /* CORNERS */
+      .card::before,
+      .card::after {
+        content: "";
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        border: 2px solid #00e5ff;
+      }
+      .card::before {
+        top: -1px;
+        left: -1px;
+        border-right: none;
+        border-bottom: none;
+      }
+      .card::after {
+        bottom: -1px;
+        right: -1px;
+        border-left: none;
+        border-top: none;
+      }
+
+      .card .corner-tr,
+      .card .corner-bl {
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        border: 2px solid #ff6d00;
+      }
+      .corner-tr {
+        top: -1px;
+        right: -1px;
+        border-left: none;
+        border-bottom: none;
+      }
+      .corner-bl {
+        bottom: -1px;
+        left: -1px;
+        border-right: none;
+        border-top: none;
+      }
+
+      .card-title {
+        font-family: "Orbitron";
+        color: #00e5ff;
+        margin-bottom: 20px;
+        letter-spacing: 2px;
+      }
+
+      /* INPUT */
+      label {
+        font-size: 12px;
+        color: #5a7fa8;
+      }
+
+      input {
+        width: 100%;
+        margin: 8px 0 15px;
+        padding: 10px;
+        background: #0d1525;
+        border: 1px solid #1e3a5f;
+        color: #fff;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #00e5ff;
+      }
+
+      /* BUTTON */
+      button {
+        width: 100%;
+        padding: 12px;
+        background: transparent;
+        border: 1px solid #00e5ff;
+        color: #00e5ff;
+        font-family: "Orbitron";
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #00e5ff;
+        color: #000;
+        box-shadow: 0 0 20px #00e5ff;
+      }
+
+      /* PLAYERS */
+      .divider {
+        text-align: center;
+        margin: 20px 0;
+        font-size: 12px;
+      }
+
+      .player-slot {
+        padding: 10px;
+        border: 1px dashed #1e3a5f;
+        margin-bottom: 8px;
+        font-size: 12px;
+      }
+
+      /* STATUS */
+      .status {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        margin-top: 20px;
+      }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
   </head>
+
   <body>
     <div class="container hidden" id="game-container"></div>
 
-    <div id="joiner">
-      <form action="" id="create-room">
-        <label for="roomId">Enter room id</label><br />
-        <input type="text" id="roomId" /><br /><br />
+    <div class="page" id="joiner">
+      <!-- VIDEO -->
+      <video autoplay muted loop playsinline class="video-bg">
+        <source src="./background.mp4" type="video/mp4" />
+      </video>
 
-        <label for="playerName">your name</label><br />
-        <input type="text" id="playerName" /><br /><br />
+      <div class="logo-tag">△ ARENA ONLINE</div>
 
-        <label for="minPlayers">enter room size</label><br />
-        <input type="text" id="minPlayers" /><br><br>
+      <h1>GAME <span>LOBBY</span></h1>
+      <p class="subtitle">ENTER YOUR CREDENTIALS & JOIN THE BATTLE</p>
 
-        <button type="submit">submit</button>
-        <br><br>
-        <div id="players">
+      <div class="card">
+        <div class="corner-tr"></div>
+        <div class="corner-bl"></div>
 
-        </div>
-      </form>
+        <div class="card-title">ROOM CONFIGURATION</div>
+
+        <form id="create-room">
+          <label>ROOM ID</label>
+          <input type="text" id="roomId" placeholder="e.g. ARENA-4291" />
+
+          <label>PLAYER NAME</label>
+          <input
+            type="text"
+            id="playerName"
+            placeholder="Enter your callsign"
+          />
+
+          <label>ROOM SIZE</label>
+          <input
+            type="text"
+            id="minPlayers"
+            placeholder="Max players (e.g. 4)"
+          />
+
+          <button type="submit">▶ LAUNCH GAME</button>
+        </form>
+
+        <div class="divider">Players in lobby</div>
+
+        <div class="player-slot" id="players"></div>
+        
+      </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>

@@ -22,6 +22,7 @@ class Player {
     this.direction = "DOWN";
 
     this.health = 100;
+    this.tookDamage = false;
     this.lastDamageTime = Date.now();
   }
 
@@ -71,7 +72,10 @@ class Player {
       ) {
         if (now - this.lastDamageTime >= 1000) {
           this.health -= fireAndSmoke.damage;
+          this.tookDamage = true;
           this.lastDamageTime = now;
+        }else{
+          this.tookDamage = false;
         }
       }
       this.health = Math.max(this.health, 0);
