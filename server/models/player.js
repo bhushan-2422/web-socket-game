@@ -1,4 +1,4 @@
-import { fireAndSmokeArray } from "../utils/damage";
+import { fireAndSmokeArray } from "../utils/damage.js";
 
 // import { DIRECTION } from "../../public/src/common/direction";
 const DIRECTION = {
@@ -74,7 +74,7 @@ class Player {
           this.lastDamageTime = now;
         }
       }
-      this.health = Math.max(player.health, 0);
+      this.health = Math.max(this.health, 0);
     }
   }
 }

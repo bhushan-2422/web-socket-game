@@ -45,6 +45,13 @@ export class Character {
     return this.#doesPositionCollideWithCollisionLayer(updatedPosition);
 
   }
+
+  update(time){
+    if(this._isMoving){
+      return;
+    }
+    this._phaserGameObject.anims.stop();
+  }
   animateTo(x, y, direction) {
     if (direction == DIRECTION.NONE) {
       return;
