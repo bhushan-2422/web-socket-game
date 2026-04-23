@@ -19,7 +19,6 @@ export class WorldScene extends Phaser.Scene {
   #Localplayer;
   #players;
   #controls;
-  #lastDirection  = 'DOWN';
   constructor() {
     super({
       key: SCENE_KEYS.WORLD_SCENE,
@@ -28,14 +27,6 @@ export class WorldScene extends Phaser.Scene {
   }
 
   create() {
-
-    this.game.canvas.addEventListener('click', () => {
-        this.game.canvas.focus();
-    });
-    this.game.canvas.setAttribute('tabindex', '0');
-    this.game.canvas.focus();  // ✅ auto focus on start
-
-
     const socket = getSocket();
     if (!socket) {
       console.log("socket is not initiated");
@@ -85,39 +76,19 @@ export class WorldScene extends Phaser.Scene {
     });
   }
 
-update() {
+  update() {
     const socket = getSocket();
     if (!this.#Localplayer) return;
-    if (!this.#controls) return;
 
     const selectedDirection = this.#controls.getDirectionKeyJustPressed();
-
-    if (selectedDirection !== DIRECTION.NONE) {
-        this.#lastDirection = selectedDirection;
-
-        if (!this.#Localplayer.isMoving) {
-            // ✅ play animation
-            this.#Localplayer._phaserGameObject.play(`PLAYER_${selectedDirection}`);
-            
-            // ✅ move one tile
-            this.#Localplayer.moveCharacter(selectedDirection);
-            socket.emit("move_request", {
-                currPosition: this.#Localplayer._targetPosition,
-                direction: selectedDirection,
-            });
-        }
+    if (selectedDirection != DIRECTION.NONE) {
+      socket.emit("move_request", {
+        currPosition: this.#Localplayer._targetPosition,
+        direction: selectedDirection,
+      });
     }
-}
+  }
 
-#getIdleFrame(direction) {
-    switch(direction) {
-        case DIRECTION.UP:    return 0;  // first frame of UP walk
-        case DIRECTION.RIGHT: return 3;  // first frame of RIGHT walk
-        case DIRECTION.DOWN:  return 6;  // first frame of DOWN walk
-        case DIRECTION.LEFT:  return 9;  // first frame of LEFT walk
-        default:              return 6;
-    }
-}
   
 
   syncPlayers(serverPlayers, collisionLayer, socket) {
@@ -142,7 +113,8 @@ update() {
           this.cameras.main.startFollow(this.#Localplayer._phaserGameObject);
         }
       } else {
-        this.#players.get(id).animateTo(data.x, data.y, data.direction);
+        this.#players.get(id)._phaserGameObject.play(`PLAYER_${data.direction}`);
+        this.#players.get(id).moveCharacter(data.x, data.y, data.direction);
       }
     });
 

@@ -1,4 +1,5 @@
 import { DIRECTION } from "../../common/direction.js";
+import { exhaustiveGuard } from "../../utils/guard.js";
 
 export class Character {
   _scene;
@@ -29,6 +30,9 @@ export class Character {
     this._spriteGridMovementFinishedCallback =
       config.spriteGridMovementFinishedCallback;
   }
+ get phaserGameObject() {
+        return this._phaserGameObject;
+    }
 
   //boolean
   get isMoving() {
@@ -45,13 +49,6 @@ export class Character {
     return this.#doesPositionCollideWithCollisionLayer(updatedPosition);
 
   }
-
-  update(time){
-    if(this._isMoving){
-      return;
-    }
-    this._phaserGameObject.anims.stop();
-  }
   animateTo(x, y, direction) {
     if (direction == DIRECTION.NONE) {
       return;
@@ -62,8 +59,7 @@ export class Character {
     this._previousTargetPosition = { ...this._targetPosition };
     this._targetPosition.x = x;
     this._targetPosition.y = y;
-
-    
+    this._direction = direction;
 
     this._scene.add.tween({
       delay: 0,
@@ -83,6 +79,7 @@ export class Character {
       onComplete: () => {
         this._direction = DIRECTION.NONE
         this._isMoving = false;
+        this._phaserGameObject.anims.stop();
         this._previousTargetPosition = { ...this._targetPosition };
         if (this._spriteGridMovementFinishedCallback) {
           this._spriteGridMovementFinishedCallback();

@@ -1,7 +1,7 @@
 import Phaser from "../lib/phaser.js"
+import { DataUtils } from "../utils/data-utils.js"
 import { CHARACTER_ASSET_KEY, DATA_ASSET_KEYS, WORLD_ASSET_KEYS } from "./asset-keys.js"
 import { SCENE_KEYS } from "./scene-keys.js"
-import { DataUtils } from "../utils/data-utils.js";
 
 export class PreloadScene extends Phaser.Scene{
     constructor(){
@@ -27,17 +27,17 @@ export class PreloadScene extends Phaser.Scene{
             frameWidth: 16,
             frameHeight: 16
         })
+            this.load.json(DATA_ASSET_KEYS.ANIMATIONS, 'src/assets/data/animations.json')
 
-        // load json data
-
-    this.load.json(DATA_ASSET_KEYS.ANIMATIONS, 'src/assets/data/animations.json')
+        
 
     }
 
     create(){
         console.log("create")
-        this.scene.start(SCENE_KEYS.WORLD_SCENE)
         this.#createAnimations()
+        this.scene.start(SCENE_KEYS.WORLD_SCENE)
+        
     }
 
  #createAnimations() {
