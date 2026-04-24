@@ -78,6 +78,7 @@ class Player {
       } else {
         this.tookDamage = false;
       }
+
     }
     this.health = Math.max(this.health, 0);
   }

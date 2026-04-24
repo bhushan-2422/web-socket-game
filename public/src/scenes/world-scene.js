@@ -120,6 +120,7 @@ export class WorldScene extends Phaser.Scene {
           this.cameras.main.startFollow(this.#Localplayer._phaserGameObject);
         }
       } else {
+
         if (id === socket.id) {
           this.#Localplayer.setHealth(data.health);
           const isDamage = data.tookDamage;
@@ -157,7 +158,8 @@ export class WorldScene extends Phaser.Scene {
             });
           }
         }
-        this.#players.get(id).animateTo(data.x, data.y, data.direction);
+        this.#players.get(id)._phaserGameObject.play(`PLAYER_${data.direction}`);
+        this.#players.get(id).moveCharacter(data.x, data.y, data.direction);
       }
     });
 

@@ -1,5 +1,6 @@
 import Phaser from "../lib/phaser.js"
-import { CHARACTER_ASSET_KEY, WORLD_ASSET_KEYS } from "./asset-keys.js"
+import { DataUtils } from "../utils/data-utils.js"
+import { CHARACTER_ASSET_KEY, DATA_ASSET_KEYS, WORLD_ASSET_KEYS } from "./asset-keys.js"
 import { SCENE_KEYS } from "./scene-keys.js"
 
 export class PreloadScene extends Phaser.Scene{
@@ -26,6 +27,7 @@ export class PreloadScene extends Phaser.Scene{
             frameWidth: 16,
             frameHeight: 16
         })
+            this.load.json(DATA_ASSET_KEYS.ANIMATIONS, 'src/assets/data/animations.json')
 
         
 
@@ -33,8 +35,31 @@ export class PreloadScene extends Phaser.Scene{
 
     create(){
         console.log("create")
+        this.#createAnimations()
         this.scene.start(SCENE_KEYS.WORLD_SCENE)
+        
     }
 
-    
+ #createAnimations() {
+        const animations = DataUtils.getAnimations(this);
+        if (!animations) {
+            console.error("animations data not found! Check animations.json path");
+            return;
+        }
+
+        animations.forEach((animation) => {
+            const frames = animation.frames
+                ? this.anims.generateFrameNumbers(animation.assetKey, { frames: animation.frames })
+                : this.anims.generateFrameNumbers(animation.assetKey);
+
+            this.anims.create({
+                key: animation.key,
+                frames: frames,
+                frameRate: animation.frameRate,
+                repeat: animation.repeat,
+                delay: animation.delay,
+                yoyo: animation.yoyo,
+            });
+        });
+    }
 }

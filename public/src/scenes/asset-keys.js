@@ -8,3 +8,7 @@ export const CHARACTER_ASSET_KEY = Object.freeze({
     PLAYER: 'PLAYER',
     NPC: 'NPC'
 })
+
+export const DATA_ASSET_KEYS = Object.freeze({
+    ANIMATIONS : 'ANIMATIONS'
+})
