@@ -10,6 +10,8 @@ export class Character {
   _previousTargetPosition;
   _spriteGridMovementFinishedCallback;
   _collisionLayer;
+  _health;
+  _isDangerActive;
 
   constructor(config) {
     this._scene = config.scene;
@@ -17,7 +19,9 @@ export class Character {
     this._isMoving = false;
     this._targetPosition = { ...config.position };
     this._previousTargetPosition = { ...config.position };
-    this._collisionLayer = config.collisionLayer 
+    this._collisionLayer = config.collisionLayer;
+    this._health = config.health;
+    this._isDangerActive = false;
     this._phaserGameObject = this._scene.add
       .sprite(
         config.position.x,
@@ -44,22 +48,34 @@ export class Character {
     return this._direction;
   }
 
-  _isBlockingTile(x,y){
-    const updatedPosition = {x,y}
+  _isBlockingTile(x, y) {
+    const updatedPosition = { x, y };
     return this.#doesPositionCollideWithCollisionLayer(updatedPosition);
-
   }
+
+  setHealth(health) {
+    if (health < this._health) {
+      this._health = health;
+      return true;
+    }
+    return false;
+  }
+
+  
+
   animateTo(x, y, direction) {
     if (direction == DIRECTION.NONE) {
       return;
     }
-    if(this._isBlockingTile(x,y)){
+    if (this._isBlockingTile(x, y)) {
       return;
     }
     this._previousTargetPosition = { ...this._targetPosition };
     this._targetPosition.x = x;
     this._targetPosition.y = y;
+
     this._direction = direction;
+
 
     this._scene.add.tween({
       delay: 0,
@@ -77,7 +93,7 @@ export class Character {
       targets: this._phaserGameObject,
 
       onComplete: () => {
-        this._direction = DIRECTION.NONE
+        this._direction = DIRECTION.NONE;
         this._isMoving = false;
         this._phaserGameObject.anims.stop();
         this._previousTargetPosition = { ...this._targetPosition };
@@ -88,14 +104,14 @@ export class Character {
     });
   }
 
-  #doesPositionCollideWithCollisionLayer(position){
-    if(!this._collisionLayer){
+  #doesPositionCollideWithCollisionLayer(position) {
+    if (!this._collisionLayer) {
       console.log("character]error:  no collision layer");
-      return false
+      return false;
     }
 
-    const {x,y} = position;
-    const tile = this._collisionLayer.getTileAtWorldXY(x,y, true);
+    const { x, y } = position;
+    const tile = this._collisionLayer.getTileAtWorldXY(x, y, true);
     return tile.index !== -1;
   }
 

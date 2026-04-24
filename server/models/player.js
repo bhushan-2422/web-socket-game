@@ -22,6 +22,7 @@ class Player {
     this.direction = "DOWN";
 
     this.health = 100;
+    this.tookDamage = false;
     this.lastDamageTime = Date.now();
   }
 
@@ -66,16 +67,20 @@ class Player {
         this.currPosition.y >= fireAndSmoke.y * TILE_SIZE &&
         this.currPosition.x <
           (fireAndSmoke.x + fireAndSmoke.width) * TILE_SIZE &&
-        this.currPosition.y <
-          (fireAndSmoke.y + fireAndSmoke.height) * TILE_SIZE
+        this.currPosition.y < (fireAndSmoke.y + fireAndSmoke.height) * TILE_SIZE
       ) {
-        if (now - this.lastDamageTime >= 2000) {
+        this.tookDamage = true;
+        if (now - this.lastDamageTime >= 1000) {
           this.health -= fireAndSmoke.damage;
           this.lastDamageTime = now;
         }
+        break;
+      } else {
+        this.tookDamage = false;
       }
-      this.health = Math.max(this.health, 0);
+
     }
+    this.health = Math.max(this.health, 0);
   }
 }
 
