@@ -7,6 +7,7 @@ class Room{
         this.players = [];
         this.state = "WAITING"
         this.exits = this.createExits()
+        this.avgTime = 0;
     }
 
     isPlayerExist(socket){
@@ -22,6 +23,9 @@ class Room{
         return shuffled.slice(0, 2);
     }
 
+    addExitTime(time){
+        this.avgTime += time/this.players.length;
+    }
 }
 
 export {Room}

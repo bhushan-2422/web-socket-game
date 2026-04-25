@@ -283,6 +283,100 @@
         position: absolute;
         inset: 0;
       }
+
+      /* #exit-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(10, 10, 20, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+      } */
+
+      #exit-screen.visible {
+  display: flex;   /* shown only when .visible is added */
+  justify-content: center;
+  align-items: center;
+}
+
+
+      .exit-card {
+        background: linear-gradient(145deg, #1c1f2b, #2a2e3f);
+        border-radius: 15px;
+        padding: 30px;
+        width: 400px;
+        text-align: center;
+        color: white;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+      }
+
+      .exit-card h1 {
+        margin-bottom: 20px;
+        font-size: 32px;
+        color: #4cafef;
+      }
+
+      .stats {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+
+      .stat-box {
+        background: #11131a;
+        padding: 15px;
+        border-radius: 10px;
+        width: 45%;
+      }
+
+      .stat-box h2 {
+        margin-top: 5px;
+        color: #00ffcc;
+      }
+
+      #leaderboard {
+        margin-top: 15px;
+      }
+
+      #leaderboard ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      #leaderboard li {
+        background: #151824;
+        margin: 5px 0;
+        padding: 8px;
+        border-radius: 5px;
+      }
+
+      .actions {
+        margin-top: 20px;
+      }
+
+      .actions button {
+        margin: 5px;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      #play-again {
+        background: #4caf50;
+        color: white;
+      }
+
+      #exit-game {
+        background: #f44336;
+        color: white;
+      }
+
     </style>
   </head>
 
@@ -352,6 +446,34 @@
         <div class="divider">Players in lobby</div>
 
         <div class="player-slot" id="players"></div>
+      </div>
+    </div>
+
+    <div id="exit-screen" class="">
+      <div class="exit-card">
+        <h1>🏁 Escaped!</h1>
+
+        <div class="stats">
+          <div class="stat-box">
+            <p>Your Time</p>
+            <h2 id="your-time">0s</h2>
+          </div>
+
+          <div class="stat-box">
+            <p>Average Time</p>
+            <h2 id="avg-time">0s</h2>
+          </div>
+        </div>
+
+        <div id="leaderboard">
+          <h3>Leaderboard</h3>
+          <ul id="leaderboard-list"></ul>
+        </div>
+
+        <div class="actions">
+          <button id="play-again">Play Again</button>
+          <button id="exit-game">Exit</button>
+        </div>
       </div>
     </div>
 

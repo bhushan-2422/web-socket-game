@@ -22,8 +22,6 @@ app.get("/", (req, res) => {
   res.sendFile(join(__dirname, "../public/index.html"));
 });
 
-
-
 const players = {};
 const rooms = {};
 
@@ -32,16 +30,15 @@ const rooms = {};
 
 //   Object.values(rooms).forEach(room => {
 //     room.players.forEach(player => {
-      
+
 //       player.checkDamage(now);
 //     });
 
 //     io.to(room.roomId).emit("state_update", room.players);
-    
+
 //   });
 
 // }, 200);
-
 
 io.on("connection", (socket) => {
   console.log("user connected");
@@ -53,7 +50,7 @@ io.on("connection", (socket) => {
 
   socket.on("create-room", ({ roomId, playerName, minPlayers }) => {
     if (!rooms[roomId]) {
-      rooms[roomId] = new Room(roomId, minPlayers)
+      rooms[roomId] = new Room(roomId, minPlayers);
     }
     const room = rooms[roomId];
 
@@ -75,9 +72,7 @@ io.on("connection", (socket) => {
 
     if (!room.isFilled()) {
       io.to(roomId).emit("waiting", room.players);
-    }
-    
-    else {
+    } else {
       room.state = "playing";
       io.to(roomId).emit("start-game", room);
     }
@@ -87,11 +82,18 @@ io.on("connection", (socket) => {
     const player = players[socket.id];
     if (!player) return;
 
-    player.changePosition(currPosition, direction)
+    player.changePosition(currPosition, direction);
     const now = Date.now();
     player.checkDamage(now);
-
     const roomId = player.roomId;
+    const room = rooms[roomId]
+    if (player.checkReachedExit(room)) {
+      io.to(roomId).emit("player-exited", {
+        playerId: player.id,
+        timeTaken: room.avgTime,
+      });
+    }
+
     io.to(roomId).emit("state_update", rooms[roomId].players);
   });
 

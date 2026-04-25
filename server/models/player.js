@@ -24,6 +24,9 @@ class Player {
     this.health = 100;
     this.tookDamage = false;
     this.lastDamageTime = Date.now();
+
+    this.startTime = Date.now(); // ⬅️ track when player started
+    this.isExited = false;
   }
 
   changePosition(currPosition, direction) {
@@ -78,9 +81,25 @@ class Player {
       } else {
         this.tookDamage = false;
       }
-
     }
     this.health = Math.max(this.health, 0);
+  }
+
+  checkReachedExit(room) {
+    for (const exits of room.exits) {
+      if (
+        this.currPosition.x >= exits.x * TILE_SIZE &&
+        this.currPosition.y >= exits.y * TILE_SIZE &&
+        this.currPosition.x < (exits.x + exits.width) * TILE_SIZE &&
+        this.currPosition.y < (exits.y + exits.height) * TILE_SIZE &&
+        !this.isExited
+      ) {
+        this.isExited = true;
+        const timeTaken = Date.now() - this.startTime;
+        room.addExitTime(timeTaken);
+        return true;
+      }
+    } 
   }
 }
 
