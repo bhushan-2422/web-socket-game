@@ -113,6 +113,17 @@ io.on("connection", (socket) => {
     // update remaining players
     io.to(player.roomId).emit("state_update", room.players);
   });
+
+  socket.on("chat-message",({text})=>{
+    const player = players[socket.id];
+    io.to(player.roomId).emit("chat-message",
+      {
+        senderId: socket.id, 
+        senderName: player.name,
+        text
+      }
+    )
+  })
 });
 
 server.listen(PORT, () => {

@@ -5,15 +5,17 @@ import { SCENE_KEYS } from "./scenes/scene-keys.js";
 import { WorldScene } from "./scenes/world-scene.js";
 
 // ── Screen references ────────────────────────────────────────────────────────
-const screenLobby  = document.getElementById("joiner");
-const screenGame   = document.getElementById("game-wrapper");
-const screenExit   = document.getElementById("exit-screen");
+const screenLobby = document.getElementById("joiner");
+const screenGame = document.getElementById("game-wrapper");
+const screenExit = document.getElementById("exit-screen");
 
 // ── Screen switcher ──────────────────────────────────────────────────────────
 // Only one screen is ever visible. All three start hidden in CSS (display:none).
 // Lobby alone has display:flex on load via its initial CSS rule.
 function show(screen) {
-  [screenLobby, screenGame, screenExit].forEach(s => s.classList.remove("show"));
+  [screenLobby, screenGame, screenExit].forEach((s) =>
+    s.classList.remove("show"),
+  );
   screen.classList.add("show");
 }
 
@@ -66,7 +68,7 @@ function resetSocket() {
 document.getElementById("create-room").addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const roomId     = document.getElementById("roomId").value.trim();
+  const roomId = document.getElementById("roomId").value.trim();
   const playerName = document.getElementById("playerName").value.trim();
   const minPlayers = document.getElementById("minPlayers").value.trim();
   const playersList = document.getElementById("players");
@@ -108,6 +110,52 @@ document.getElementById("create-room").addEventListener("submit", (e) => {
       (timeTaken / 1000).toFixed(2) + "s";
     show(screenExit);
   });
+
+  // ── Socket listener (add this inside your socket.on("connect") block) ─────────
+socket.on("chat-message", ({ senderId, senderName, text }) => {
+  const isMine = senderId === socket.id;
+  appendMessage(senderName, text, isMine);
+});
+
+
+  
+});
+
+const messagesDiv = document.getElementById("messages");
+const chatInput = document.getElementById("chatInput");
+const sendBtn = document.getElementById("sendBtn");
+
+function appendMessage(senderName, text, isMine) {
+  const wrapper = document.createElement("div");
+  wrapper.className = `msg-wrapper ${isMine ? "mine" : "theirs"}`;
+
+  if (!isMine) {
+    const sender = document.createElement("div");
+    sender.className = "msg-sender";
+    sender.textContent = senderName;
+    wrapper.appendChild(sender);
+  }
+
+  const bubble = document.createElement("div");
+  bubble.className = "msg-bubble";
+  bubble.textContent = text;
+  wrapper.appendChild(bubble);
+
+  messagesDiv.appendChild(wrapper);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function sendMessage() {
+  const text = chatInput.value.trim();
+  if (!text || !socket) return;
+  socket.emit("chat-message", { text });
+  chatInput.value = "";
+  chatInput.focus();
+}
+
+sendBtn.addEventListener("click", sendMessage);
+chatInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") sendMessage();
 });
 
 // ── Exit screen buttons ──────────────────────────────────────────────────────
