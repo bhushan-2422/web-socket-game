@@ -104,5 +104,21 @@ export const fireAndSmokeArray = [
     type: "fire",
     damage: 5,
   },
+  {
+    x: 41,
+    y: 43,
+    width: 8,
+    height: 6,
+    type: "fire",
+    damage: 5,
+  },
+  {
+    x: 27,
+    y: 1,
+    width: 3,
+    height: 7,
+    type: "fire",
+    damage: 5,
+  },
 ];
 

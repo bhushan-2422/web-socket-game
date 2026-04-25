@@ -9,6 +9,8 @@ export class PreloadScene extends Phaser.Scene{
             key: SCENE_KEYS.PRELOAD_SCENE
         })
         console.log(SCENE_KEYS.PRELOAD_SCENE)
+
+        
     }
 
     preload(){
@@ -17,6 +19,7 @@ export class PreloadScene extends Phaser.Scene{
         this.load.image(WORLD_ASSET_KEYS.WORLD_BACKGROUND,'src/assets/images/monster-tamer/map/firemap.png')
         this.load.tilemapTiledJSON(WORLD_ASSET_KEYS.WORLD_MAIN_LEVEL,'src/assets/data/myMap.json')
         this.load.image(WORLD_ASSET_KEYS.WORLD_COLLISION, "src/assets/images/monster-tamer/map/collision.png")
+        this.load.image(WORLD_ASSET_KEYS.EXIT_DOOR,'src/assets/images/monster-tamer/map/exit2.png')
 
         //load character assets
         this.load.spritesheet(CHARACTER_ASSET_KEY.PLAYER,'src/assets/images/axulart/character/custom.png',{
@@ -36,7 +39,7 @@ export class PreloadScene extends Phaser.Scene{
     create(){
         console.log("create")
         this.#createAnimations()
-        this.scene.start(SCENE_KEYS.WORLD_SCENE)
+        this.scene.start(SCENE_KEYS.WORLD_SCENE, this.scene.settings.data)
         
     }
 

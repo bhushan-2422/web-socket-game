@@ -26,6 +26,12 @@ export class WorldScene extends Phaser.Scene {
     this.#players = new Map();
   }
 
+  init(data) {
+    console.log(data)
+    this.exits = data.exits; // received from server
+
+  }
+
   create() {
     const socket = getSocket();
     if (!socket) {
@@ -52,6 +58,13 @@ export class WorldScene extends Phaser.Scene {
     }
     collisionLayer.setAlpha(TILED_COLLISION_LAYER_ALPHA).setDepth(2);
     this.add.image(0, 0, WORLD_ASSET_KEYS.WORLD_BACKGROUND, 0).setOrigin(0);
+    this.exits.forEach((exit) => {
+            const x = exit.x * TILE_SIZE;
+            const y = exit.y * TILE_SIZE;
+
+            this.add.image(x, y, WORLD_ASSET_KEYS.EXIT_DOOR,0).setOrigin(0);
+        });
+
     this.#controls = new Controls(this);
 
     //shake the screen after sec 8-15
@@ -120,7 +133,6 @@ export class WorldScene extends Phaser.Scene {
           this.cameras.main.startFollow(this.#Localplayer._phaserGameObject);
         }
       } else {
-
         if (id === socket.id) {
           this.#Localplayer.setHealth(data.health);
           const isDamage = data.tookDamage;
@@ -158,7 +170,9 @@ export class WorldScene extends Phaser.Scene {
             });
           }
         }
-        this.#players.get(id)._phaserGameObject.play(`PLAYER_${data.direction}`);
+        this.#players
+          .get(id)
+          ._phaserGameObject.play(`PLAYER_${data.direction}`);
         this.#players.get(id).moveCharacter(data.x, data.y, data.direction);
       }
     });

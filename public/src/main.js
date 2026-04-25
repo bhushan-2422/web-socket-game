@@ -4,7 +4,7 @@ import { PreloadScene } from "./scenes/preload-scene.js";
 import { SCENE_KEYS } from "./scenes/scene-keys.js";
 import { WorldScene } from "./scenes/world-scene.js";
 
-function startGame() {
+function startGame(room) {
   const game = new Phaser.Game({
     type: Phaser.CANVAS,
     pixelArt: false,
@@ -19,7 +19,8 @@ function startGame() {
 
   game.scene.add(SCENE_KEYS.PRELOAD_SCENE, PreloadScene);
   game.scene.add(SCENE_KEYS.WORLD_SCENE, WorldScene);
-  game.scene.start(SCENE_KEYS.PRELOAD_SCENE);
+
+  game.scene.start(SCENE_KEYS.PRELOAD_SCENE, { exits: room.exits });
 }
 
 let socket = null;
@@ -33,6 +34,7 @@ document.getElementById("create-room").addEventListener("submit", (e) => {
   const minPlayers = document.getElementById("minPlayers").value;
   const playersContainer = document.getElementById("players");
   const gameContainer = document.getElementById("game-container");
+  
 
   if (!roomId || !playerName || !minPlayers) {
     alert("Fill all fields");
@@ -58,18 +60,26 @@ document.getElementById("create-room").addEventListener("submit", (e) => {
 
     })
 
-    socket.on("start-game", (players) =>{
+    socket.on("start-game", (room) =>{
       console.log("start game socket")
 
       joiner.classList.add("hidden");
-      gameContainer.classList.remove("hidden");
-      startGame();
-      
-
-
+      document.getElementById("game-wrapper").classList.remove("hidden");
+      startGame(room);
+    
     })
   }
 });
+
+
+document.getElementById("menuBtn").onclick = () => {
+  document.getElementById("menuPanel").classList.toggle("show");
+};
+
+document.getElementById("chatBtn").onclick = () => {
+  document.getElementById("chatPanel").classList.toggle("show");
+};
+
 
 // socket = io();
 

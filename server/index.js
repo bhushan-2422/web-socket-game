@@ -8,6 +8,7 @@ import { Room } from "./models/room.js";
 import { fireAndSmokeArray } from "./utils/damage.js";
 
 const app = express();
+
 const server = createServer(app);
 const PORT = 3000;
 const io = new Server(server);
@@ -40,6 +41,7 @@ const rooms = {};
 //   });
 
 // }, 200);
+
 
 io.on("connection", (socket) => {
   console.log("user connected");
@@ -77,7 +79,7 @@ io.on("connection", (socket) => {
     
     else {
       room.state = "playing";
-      io.to(roomId).emit("start-game", room.players);
+      io.to(roomId).emit("start-game", room);
     }
   });
 
