@@ -4,11 +4,26 @@ import { PreloadScene } from "./scenes/preload-scene.js";
 import { SCENE_KEYS } from "./scenes/scene-keys.js";
 import { WorldScene } from "./scenes/world-scene.js";
 
-let game = null
-function startGame(room) {
+// ── Screen references ────────────────────────────────────────────────────────
+const screenLobby  = document.getElementById("joiner");
+const screenGame   = document.getElementById("game-wrapper");
+const screenExit   = document.getElementById("exit-screen");
 
+// ── Screen switcher ──────────────────────────────────────────────────────────
+// Only one screen is ever visible. All three start hidden in CSS (display:none).
+// Lobby alone has display:flex on load via its initial CSS rule.
+function show(screen) {
+  [screenLobby, screenGame, screenExit].forEach(s => s.classList.remove("show"));
+  screen.classList.add("show");
+}
+
+// ── Phaser instance ──────────────────────────────────────────────────────────
+let game = null;
+
+function startGame(room) {
   if (game) {
     game.destroy(true);
+    document.getElementById("game-container").innerHTML = "";
     game = null;
   }
 
@@ -26,100 +41,89 @@ function startGame(room) {
 
   game.scene.add(SCENE_KEYS.PRELOAD_SCENE, PreloadScene);
   game.scene.add(SCENE_KEYS.WORLD_SCENE, WorldScene);
-
   game.scene.start(SCENE_KEYS.PRELOAD_SCENE, { exits: room.exits });
 }
 
+function destroyGame() {
+  if (game) {
+    game.destroy(true);
+    document.getElementById("game-container").innerHTML = "";
+    game = null;
+  }
+}
+
+// ── Socket ───────────────────────────────────────────────────────────────────
 let socket = null;
 
-const joiner = document.getElementById("joiner");
+function resetSocket() {
+  if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
+}
+
+// ── Lobby form ───────────────────────────────────────────────────────────────
 document.getElementById("create-room").addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const roomId = document.getElementById("roomId").value;
-  const playerName = document.getElementById("playerName").value;
-  const minPlayers = document.getElementById("minPlayers").value;
-  const playersContainer = document.getElementById("players");
-  const gameContainer = document.getElementById("game-container");
+  const roomId     = document.getElementById("roomId").value.trim();
+  const playerName = document.getElementById("playerName").value.trim();
+  const minPlayers = document.getElementById("minPlayers").value.trim();
+  const playersList = document.getElementById("players");
 
   if (!roomId || !playerName || !minPlayers) {
     alert("Fill all fields");
     return;
   }
 
-  // Create socket only once
-  if (!socket) {
-    socket = initSocket();
+  if (socket) return; // already connected, don't double-connect
 
-    socket.on("connect", () => {
-      console.log("Connected:", socket.id);
+  socket = initSocket();
 
-      socket.emit("create-room", { roomId, playerName, minPlayers });
+  socket.on("connect", () => {
+    console.log("Connected:", socket.id);
+    socket.emit("create-room", { roomId, playerName, minPlayers });
+  });
+
+  socket.on("waiting", (players) => {
+    playersList.innerHTML = "";
+    players.forEach((p) => {
+      const div = document.createElement("div");
+      div.textContent = p.name;
+      playersList.append(div);
     });
+  });
 
-    socket.on("waiting", (players) => {
-      players.forEach((p) => {
-        const itemDiv = document.createElement("div");
-        itemDiv.textContent = p.name;
-        playersContainer.append(itemDiv);
-      });
-    });
+  socket.on("start-game", (room) => {
+    console.log("start-game received");
+    show(screenGame);
+    startGame(room);
+  });
 
-    socket.on("start-game", (room) => {
-      console.log("start game socket");
+  socket.on("player-exited", ({ playerId, timeTaken }) => {
+    if (playerId !== socket.id) return;
 
-      joiner.classList.add("hidden");
-      document.getElementById("game-wrapper").classList.remove("hidden");
-      startGame(room);
-    });
-
-    socket.on("player-exited", ({ playerId, timeTaken }) => {
-      console.log("timeTaken"+"hello")
-      if (playerId === socket.id) {
-        document.getElementById("game-wrapper").classList.add("hidden");
-        document.getElementById("exit-screen").classList.add("visible");
-
-        document.getElementById("your-time").textContent =
-          (timeTaken / 1000).toFixed(2) + "s";
-      }
-    });
-  }
+    destroyGame();
+    document.getElementById("your-time").textContent =
+      (timeTaken / 1000).toFixed(2) + "s";
+    show(screenExit);
+  });
 });
 
-function destroyGame() {
-  if (game) {
-    game.destroy(true); // 🔥 removes canvas + scenes
-    game = null;
-
-    // optional: clean container manually (extra safety)
-    document.getElementById("game-container").innerHTML = "";
-  }
-}
+// ── Exit screen buttons ──────────────────────────────────────────────────────
+document.getElementById("play-again").onclick = () => {
+  resetSocket();
+  document.getElementById("players").innerHTML = "";
+  show(screenLobby);
+};
 
 document.getElementById("exit-game").onclick = () => {
-  destroyGame();
-
-  if (socket) {
-    socket.disconnect();
-    socket = null;
-  }
-
-  showLobby();
-};
-
-document.getElementById("play-again").onclick = () => {
-  destroyGame();
-
-  if (socket) {
-    socket.disconnect();
-    socket = null;
-  }
-
+  resetSocket();
   document.getElementById("players").innerHTML = "";
-
-  showLobby();
+  show(screenLobby);
 };
 
+// ── In-game panel toggles ────────────────────────────────────────────────────
 document.getElementById("menuBtn").onclick = () => {
   document.getElementById("menuPanel").classList.toggle("show");
 };
@@ -127,33 +131,5 @@ document.getElementById("menuBtn").onclick = () => {
 document.getElementById("chatBtn").onclick = () => {
   document.getElementById("chatPanel").classList.toggle("show");
 };
-
-function showExitScreen() {
-  document.getElementById("joiner").classList.add("hidden");
-  document.getElementById("game-wrapper").classList.add("hidden");
-  document.getElementById("exit-screen").classList.add("visible");
-}
-
-function showLobby() {
-  document.getElementById("joiner").classList.remove("hidden");
-  document.getElementById("game-wrapper").classList.add("hidden");
-  document.getElementById("exit-screen").classList.remove("visible");
-}
-
-function showGame() {
-  document.getElementById("joiner").classList.add("hidden");
-  document.getElementById("game-wrapper").classList.remove("hidden");
-  document.getElementById("exit-screen").classList.remove("visible");
-}
-
-
-
-// socket = io();
-
-// socket.on("connect", () => {
-//   console.log("Connected:", socket.id);
-
-//   socket.emit("player-join", { name: "viking" });
-// });
 
 export default socket;

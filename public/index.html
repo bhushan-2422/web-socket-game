@@ -18,33 +18,44 @@
         box-sizing: border-box;
       }
 
-      html,
-      body,
-      .container {
-        margin: 0;
+      html, body {
         height: 100vh;
         width: 100vw;
         overflow: hidden;
-      }
-      /* body{
-        background-color: black;
-      } */
-      .hidden {
-        display: none;
-      }
-
-      body {
         background: #080c14;
         color: #cfe4ff;
         font-family: "Rajdhani", sans-serif;
-        overflow: hidden;
       }
 
-      /* VIDEO */
+      /* ── SCREENS ── */
+      /* All three screens default to hidden */
+      #joiner,
+      #game-wrapper,
+      #exit-screen {
+        display: none;
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+      }
+
+      /* Only joiner is visible on load */
+      #joiner {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* Show classes */
+      #joiner.show       { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+      #game-wrapper.show { display: block; }
+      #exit-screen.show  { display: flex; justify-content: center; align-items: center; }
+
+      /* ── VIDEO BG ── */
       .video-bg {
         position: fixed;
-        top: 0;
-        left: 0;
+        inset: 0;
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -52,7 +63,7 @@
         filter: brightness(0.35) contrast(1.2);
       }
 
-      /* GRID */
+      /* ── GRID OVERLAY ── */
       body::before {
         content: "";
         position: fixed;
@@ -61,18 +72,11 @@
           linear-gradient(rgba(0, 229, 255, 0.05) 1px, transparent 1px),
           linear-gradient(90deg, rgba(0, 229, 255, 0.05) 1px, transparent 1px);
         background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 0;
       }
 
-      /* PAGE */
-      .page {
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
-
-      /* TITLE */
+      /* ── LOBBY ── */
       .logo-tag {
         font-family: "Share Tech Mono";
         color: #00e5ff;
@@ -80,6 +84,7 @@
         padding: 3px 10px;
         margin-bottom: 10px;
         font-size: 12px;
+        z-index: 1;
       }
 
       h1 {
@@ -87,7 +92,9 @@
         font-size: 60px;
         color: #fff;
         text-shadow: 0 0 20px #00e5ff;
+        z-index: 1;
       }
+
       h1 span {
         color: #ff6d00;
         text-shadow: 0 0 20px #ff6d00;
@@ -96,58 +103,37 @@
       .subtitle {
         margin: 10px 0 30px;
         letter-spacing: 2px;
+        z-index: 1;
       }
 
-      /* CARD */
+      /* ── CARD ── */
       .card {
         width: 420px;
         background: rgba(10, 20, 40, 0.85);
         border: 1px solid #1e3a5f;
         padding: 30px;
         position: relative;
+        z-index: 1;
       }
 
-      /* CORNERS */
-      .card::before,
-      .card::after {
+      .card::before, .card::after {
         content: "";
         position: absolute;
         width: 15px;
         height: 15px;
         border: 2px solid #00e5ff;
       }
-      .card::before {
-        top: -1px;
-        left: -1px;
-        border-right: none;
-        border-bottom: none;
-      }
-      .card::after {
-        bottom: -1px;
-        right: -1px;
-        border-left: none;
-        border-top: none;
-      }
+      .card::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+      .card::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
 
-      .card .corner-tr,
-      .card .corner-bl {
+      .corner-tr, .corner-bl {
         position: absolute;
         width: 15px;
         height: 15px;
         border: 2px solid #ff6d00;
       }
-      .corner-tr {
-        top: -1px;
-        right: -1px;
-        border-left: none;
-        border-bottom: none;
-      }
-      .corner-bl {
-        bottom: -1px;
-        left: -1px;
-        border-right: none;
-        border-top: none;
-      }
+      .corner-tr { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+      .corner-bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
 
       .card-title {
         font-family: "Orbitron";
@@ -156,7 +142,7 @@
         letter-spacing: 2px;
       }
 
-      /* INPUT */
+      /* ── INPUTS ── */
       label {
         font-size: 12px;
         color: #5a7fa8;
@@ -176,9 +162,8 @@
         border-color: #00e5ff;
       }
 
-      /* BUTTON */
+      /* ── BUTTONS ── */
       button {
-        /* width: 100%; */
         padding: 12px;
         background: transparent;
         border: 1px solid #00e5ff;
@@ -193,7 +178,7 @@
         box-shadow: 0 0 20px #00e5ff;
       }
 
-      /* PLAYERS */
+      /* ── PLAYER LIST ── */
       .divider {
         text-align: center;
         margin: 20px 0;
@@ -205,32 +190,36 @@
         border: 1px dashed #1e3a5f;
         margin-bottom: 8px;
         font-size: 12px;
+        min-height: 40px;
       }
 
-      /* STATUS */
-      .status {
-        display: flex;
-        justify-content: space-between;
-        font-size: 12px;
-        margin-top: 20px;
-      }
+      /* ── GAME WRAPPER ── */
       #game-wrapper {
-        position: relative; /* 🔥 REQUIRED */
-        width: 100vw;
-        height: 100vh;
+        position: fixed;
+        inset: 0;
       }
 
       #game-container {
+        position: absolute;
+        inset: 0;
         width: 100%;
         height: 100%;
       }
 
-      /* BUTTONS */
-      #menuBtn,
-      #chatBtn {
+      .btn-container {
         position: absolute;
-        top: 15px;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
         z-index: 1000;
+        pointer-events: none;
+      }
+
+      #menuBtn, #chatBtn {
+        pointer-events: all;
         padding: 10px 14px;
         font-size: 18px;
         background: rgba(0, 0, 0, 0.6);
@@ -239,14 +228,7 @@
         cursor: pointer;
       }
 
-      #menuBtn {
-        left: 15px;
-      }
-      #chatBtn {
-        right: 15px;
-      }
-
-      /* PANELS */
+      /* ── SIDE PANELS ── */
       .panel {
         position: absolute;
         top: 0;
@@ -259,50 +241,15 @@
         transition: transform 0.3s ease;
       }
 
-      /* HIDDEN STATES */
-      .left-panel {
-        left: 0;
-        transform: translateX(-100%);
-      }
+      .left-panel  { left: 0;  transform: translateX(-100%); }
+      .right-panel { right: 0; transform: translateX(100%);  }
+      .panel.show  { transform: translateX(0); }
 
-      .right-panel {
-        right: 0;
-        transform: translateX(100%);
+      /* ── EXIT SCREEN ── */
+      #exit-screen {
+        background: rgba(10, 10, 20, 0.95);
+        z-index: 9999;
       }
-
-      /* SHOW */
-      .panel.show {
-        transform: translateX(0);
-      }
-      .btn-container {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px;
-      }
-      #game-container {
-        position: absolute;
-        inset: 0;
-      }
-
-      /* #exit-screen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(10, 10, 20, 0.9);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 999;
-      } */
-
-      #exit-screen.visible {
-  display: flex;   /* shown only when .visible is added */
-  justify-content: center;
-  align-items: center;
-}
-
 
       .exit-card {
         background: linear-gradient(145deg, #1c1f2b, #2a2e3f);
@@ -318,6 +265,7 @@
         margin-bottom: 20px;
         font-size: 32px;
         color: #4cafef;
+        text-shadow: none;
       }
 
       .stats {
@@ -338,15 +286,8 @@
         color: #00ffcc;
       }
 
-      #leaderboard {
-        margin-top: 15px;
-      }
-
-      #leaderboard ul {
-        list-style: none;
-        padding: 0;
-      }
-
+      #leaderboard { margin-top: 15px; }
+      #leaderboard ul { list-style: none; padding: 0; }
       #leaderboard li {
         background: #151824;
         margin: 5px 0;
@@ -354,72 +295,39 @@
         border-radius: 5px;
       }
 
-      .actions {
-        margin-top: 20px;
-      }
+      .actions { margin-top: 20px; }
 
       .actions button {
         margin: 5px;
         padding: 10px 15px;
         border: none;
         border-radius: 5px;
-        cursor: pointer;
         font-weight: bold;
+        font-family: "Rajdhani", sans-serif;
       }
 
-      #play-again {
-        background: #4caf50;
-        color: white;
-      }
-
-      #exit-game {
-        background: #f44336;
-        color: white;
-      }
-
+      #play-again { background: #4caf50; color: white; }
+      #exit-game  { background: #f44336; color: white; }
+      #play-again:hover { background: #45a049; box-shadow: none; color: white; }
+      #exit-game:hover  { background: #e53935; box-shadow: none; color: white; }
     </style>
   </head>
 
   <body>
-    <!-- <div class="container hidden" id="game-container"></div> -->
-    <div id="game-wrapper" class="hidden">
-      <!-- GAME -->
-      <div class="container" id="game-container"></div>
 
-      <!-- BUTTONS -->
-      <div class="btn-container">
-        <button id="menuBtn">☰</button>
-        <button id="chatBtn">💬</button>
-      </div>
-
-      <!-- LEFT PANEL -->
-      <div id="menuPanel" class="panel left-panel">
-        <h3>Menu</h3>
-        <p>Exit / Settings / Stats</p>
-      </div>
-
-      <!-- RIGHT PANEL -->
-      <div id="chatPanel" class="panel right-panel">
-        <h3>Messages</h3>
-        <div id="messages"></div>
-      </div>
-    </div>
-
-    <div class="page" id="joiner">
-      <!-- VIDEO -->
+    <!-- ── LOBBY ── -->
+    <div id="joiner">
       <video autoplay muted loop playsinline class="video-bg">
         <source src="./background.mp4" type="video/mp4" />
       </video>
 
       <div class="logo-tag">△ ARENA ONLINE</div>
-
       <h1>GAME <span>LOBBY</span></h1>
       <p class="subtitle">ENTER YOUR CREDENTIALS & JOIN THE BATTLE</p>
 
       <div class="card">
         <div class="corner-tr"></div>
         <div class="corner-bl"></div>
-
         <div class="card-title">ROOM CONFIGURATION</div>
 
         <form id="create-room">
@@ -427,29 +335,41 @@
           <input type="text" id="roomId" placeholder="e.g. ARENA-4291" />
 
           <label>PLAYER NAME</label>
-          <input
-            type="text"
-            id="playerName"
-            placeholder="Enter your callsign"
-          />
+          <input type="text" id="playerName" placeholder="Enter your callsign" />
 
           <label>ROOM SIZE</label>
-          <input
-            type="text"
-            id="minPlayers"
-            placeholder="Max players (e.g. 4)"
-          />
+          <input type="text" id="minPlayers" placeholder="Max players (e.g. 4)" />
 
           <button type="submit">▶ LAUNCH GAME</button>
         </form>
 
         <div class="divider">Players in lobby</div>
-
         <div class="player-slot" id="players"></div>
       </div>
     </div>
 
-    <div id="exit-screen" class="">
+    <!-- ── GAME ── -->
+    <div id="game-wrapper">
+      <div id="game-container"></div>
+
+      <div class="btn-container">
+        <button id="menuBtn">☰</button>
+        <button id="chatBtn">💬</button>
+      </div>
+
+      <div id="menuPanel" class="panel left-panel">
+        <h3>Menu</h3>
+        <p>Exit / Settings / Stats</p>
+      </div>
+
+      <div id="chatPanel" class="panel right-panel">
+        <h3>Messages</h3>
+        <div id="messages"></div>
+      </div>
+    </div>
+
+    <!-- ── EXIT SCREEN ── -->
+    <div id="exit-screen">
       <div class="exit-card">
         <h1>🏁 Escaped!</h1>
 
@@ -458,7 +378,6 @@
             <p>Your Time</p>
             <h2 id="your-time">0s</h2>
           </div>
-
           <div class="stat-box">
             <p>Average Time</p>
             <h2 id="avg-time">0s</h2>
