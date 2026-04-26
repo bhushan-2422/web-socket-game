@@ -19,6 +19,7 @@ export class WorldScene extends Phaser.Scene {
   #Localplayer;
   #players;
   #controls;
+  #assetKeyIndex = 1;
   constructor() {
     super({
       key: SCENE_KEYS.WORLD_SCENE,
@@ -118,8 +119,13 @@ export class WorldScene extends Phaser.Scene {
       incomingIds.add(id);
 
       if (!this.#players.has(id)) {
+
+        const index = this.#assetKeyIndex++;
+        if(index == 4) this.#assetKeyIndex = 1;
+
         const newPlayer = new Player({
           scene: this,
+          assetKey : `PLAYER${index}`,
           position: { x: data.x, y: data.y },
           direction: data.direction || DIRECTION.DOWN,
           collisionLayer: collisionLayer,
@@ -170,9 +176,9 @@ export class WorldScene extends Phaser.Scene {
             });
           }
         }
-        this.#players
-          .get(id)
-          ._phaserGameObject.play(`PLAYER_${data.direction}`);
+        // this.#players
+        //   .get(id)
+        //   ._phaserGameObject.play(`PLAYER_${data.direction}`);
         this.#players.get(id).moveCharacter(data.x, data.y, data.direction);
       }
     });

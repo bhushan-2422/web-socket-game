@@ -9,9 +9,10 @@ export class Player extends Character{
         //property assetKey is missing in playerconfig but require in character config
         super({
             ...config,
-            assetKey: CHARACTER_ASSET_KEY.PLAYER,
+            assetKey: config.assetKey,
             assetFrame: 7
         })
+        this.assetKey = config.assetKey
     }
 
 
@@ -25,7 +26,7 @@ export class Player extends Character{
             case DIRECTION.UP:
                 if (!this._phaserGameObject.anims.isPlaying ||
                     this._phaserGameObject.anims.currentAnim?.key !== `PLAYER_${this._direction}`) {
-                    this._phaserGameObject.play(`PLAYER_${this._direction}`); // ✅ use _direction
+                    this._phaserGameObject.play(`${this.assetKey}_PLAYER_${this._direction}`); // ✅ use _direction
                 }
                 break;
             case DIRECTION.NONE:

@@ -6,10 +6,15 @@ export const WORLD_ASSET_KEYS = Object.freeze({
 })
 
 export const CHARACTER_ASSET_KEY = Object.freeze({
-    PLAYER: 'PLAYER',
+    PLAYER1: 'PLAYER1',
+    PLAYER2: 'PLAYER2',
+    PLAYER3: 'PLAYER3',
+    PLAYER4: 'PLAYER4',
     NPC: 'NPC'
 })
 
 export const DATA_ASSET_KEYS = Object.freeze({
     ANIMATIONS : 'ANIMATIONS'
 })
+
+export const CHARACTER_SPRITE_KEYS = []

@@ -10,6 +10,7 @@ const DIRECTION = {
 };
 
 const TILE_SIZE = 64;
+let assetKeyIdx = 1;
 
 class Player {
   constructor(socket, playerName, roomId) {
@@ -25,8 +26,9 @@ class Player {
     this.tookDamage = false;
     this.lastDamageTime = Date.now();
 
-    this.startTime = Date.now(); // ⬅️ track when player started
+    this.startTime = Date.now();
     this.isExited = false;
+    // this.assetKey = `PLAYER${assetKeyIdx}`
   }
 
   changePosition(currPosition, direction) {
