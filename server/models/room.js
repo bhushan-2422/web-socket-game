@@ -5,6 +5,7 @@ class Room{
         this.roomId = roomId;
         this.minPlayers = minPlayers;
         this.players = [];
+        this.activePlayers = 0;
         this.state = "WAITING"
         this.exits = this.createExits()
         this.avgTime = 0;

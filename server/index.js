@@ -25,21 +25,6 @@ app.get("/", (req, res) => {
 const players = {};
 const rooms = {};
 
-// setInterval(() => {
-//   const now = Date.now();
-
-//   Object.values(rooms).forEach(room => {
-//     room.players.forEach(player => {
-
-//       player.checkDamage(now);
-//     });
-
-//     io.to(room.roomId).emit("state_update", room.players);
-
-//   });
-
-// }, 200);
-
 io.on("connection", (socket) => {
   console.log("user connected");
 
@@ -67,6 +52,9 @@ io.on("connection", (socket) => {
 
     players[socket.id] = player;
     room.players.push(player);
+    room.activePlayers += 1;
+
+    console.log(rooms)
 
     socket.join(roomId);
 
@@ -86,44 +74,63 @@ io.on("connection", (socket) => {
     const now = Date.now();
     player.checkDamage(now);
     const roomId = player.roomId;
-    const room = rooms[roomId]
+    const room = rooms[roomId];
+
     if (player.checkReachedExit(room)) {
       io.to(roomId).emit("player-exited", {
         playerId: player.id,
         timeTaken: room.avgTime,
       });
+      
+    } else if (player.checkDead(room)) {
+      io.to(roomId).emit("player-dead", {
+        playerId: player.id,
+        timeTaken: room.avgTime,
+      });
+
     }
 
-    io.to(roomId).emit("state_update", rooms[roomId].players);
+    if (rooms[roomId]) {
+      io.to(roomId).emit("state_update", rooms[roomId].players);
+    }
   });
 
   socket.on("disconnect", () => {
     const player = players[socket.id];
     if (!player) return;
 
-    const room = rooms[player.roomId];
+    const roomId = player.roomId;
+    const room = rooms[roomId];
+
+    // remove player from global players object
+    delete players[socket.id];
+    // room might already be deleted
     if (!room) return;
+
+    console.log(rooms)
 
     // remove player from room
     room.players = room.players.filter((p) => p.id !== socket.id);
-
-    // remove from global
-    delete players[socket.id];
-
-    // update remaining players
-    io.to(player.roomId).emit("state_update", room.players);
+    // decrease active players
+    room.activePlayers -= 1;
+    // delete empty room
+    if (room.activePlayers <= 0) {
+      delete rooms[roomId];
+      console.log(`Room ${roomId} deleted`);
+      return;
+    }
+    // send updated state
+    io.to(roomId).emit("state_update", room.players);
   });
 
-  socket.on("chat-message",({text})=>{
+  socket.on("chat-message", ({ text }) => {
     const player = players[socket.id];
-    io.to(player.roomId).emit("chat-message",
-      {
-        senderId: socket.id, 
-        senderName: player.name,
-        text
-      }
-    )
-  })
+    io.to(player.roomId).emit("chat-message", {
+      senderId: socket.id,
+      senderName: player.name,
+      text,
+    });
+  });
 });
 
 server.listen(PORT, () => {

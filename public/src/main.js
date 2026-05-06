@@ -111,6 +111,16 @@ document.getElementById("create-room").addEventListener("submit", (e) => {
     show(screenExit);
   });
 
+  socket.on("player-dead",({ playerId, timeTaken })=>{
+    if (playerId !== socket.id) return;
+
+    destroyGame();
+    document.getElementById("exitTag").textContent = "you are dead";
+    document.getElementById("your-time").textContent =
+      (timeTaken / 1000).toFixed(2) + "s";
+    show(screenExit);
+  })
+
   // ── Socket listener (add this inside your socket.on("connect") block) ─────────
 socket.on("chat-message", ({ senderId, senderName, text }) => {
   const isMine = senderId === socket.id;

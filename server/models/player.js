@@ -99,9 +99,18 @@ class Player {
         this.isExited = true;
         const timeTaken = Date.now() - this.startTime;
         room.addExitTime(timeTaken);
+        
         return true;
       }
     } 
+  }
+
+  checkDead(room){
+    if(this.health <= 0){
+      
+      return true;
+    }
+    return false;
   }
 }
 
