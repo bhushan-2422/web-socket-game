@@ -1,4 +1,5 @@
 import express from "express";
+import dotenv from "dotenv";
 import { createServer } from "node:http";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -6,11 +7,14 @@ import { Server } from "socket.io";
 import { Player } from "./models/player.js";
 import { Room } from "./models/room.js";
 import { fireAndSmokeArray } from "./utils/damage.js";
+import connectDB from "./db/index.js";
+
+dotenv.config();
 
 const app = express();
 
 const server = createServer(app);
-const PORT = 3000;
+const PORT = process.env.PORT || 8000;
 const io = new Server(server);
 
 const __filename = fileURLToPath(import.meta.url);
@@ -54,7 +58,7 @@ io.on("connection", (socket) => {
     room.players.push(player);
     room.activePlayers += 1;
 
-    console.log(rooms)
+    console.log(rooms);
 
     socket.join(roomId);
 
@@ -81,13 +85,11 @@ io.on("connection", (socket) => {
         playerId: player.id,
         timeTaken: room.avgTime,
       });
-      
     } else if (player.checkDead(room)) {
       io.to(roomId).emit("player-dead", {
         playerId: player.id,
         timeTaken: room.avgTime,
       });
-
     }
 
     if (rooms[roomId]) {
@@ -107,7 +109,7 @@ io.on("connection", (socket) => {
     // room might already be deleted
     if (!room) return;
 
-    console.log(rooms)
+    console.log(rooms);
 
     // remove player from room
     room.players = room.players.filter((p) => p.id !== socket.id);
@@ -133,6 +135,12 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log("app is running on: ", PORT);
+connectDB()
+.then(() => {
+  server.listen(PORT, () => {
+    console.log("app is running on: ", PORT);
+  });
+})
+.catch((e)=>{
+  console.log("mongo db connection failed with err: ",e);
 });

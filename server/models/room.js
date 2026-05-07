@@ -3,7 +3,7 @@ import { exits } from "../utils/exits.js";
 class Room{
     constructor(roomId, minPlayers){
         this.roomId = roomId;
-        this.minPlayers = minPlayers;
+        this.minPlayers = parseInt(minPlayers);
         this.players = [];
         this.activePlayers = 0;
         this.state = "WAITING"
