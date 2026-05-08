@@ -34,9 +34,9 @@ export class Character {
     this._spriteGridMovementFinishedCallback =
       config.spriteGridMovementFinishedCallback;
   }
- get phaserGameObject() {
-        return this._phaserGameObject;
-    }
+  get phaserGameObject() {
+    return this._phaserGameObject;
+  }
 
   //boolean
   get isMoving() {
@@ -61,8 +61,6 @@ export class Character {
     return false;
   }
 
-  
-
   animateTo(x, y, direction) {
     if (direction == DIRECTION.NONE) {
       return;
@@ -75,7 +73,6 @@ export class Character {
     this._targetPosition.y = y;
 
     this._direction = direction;
-
 
     this._scene.add.tween({
       delay: 0,
@@ -95,7 +92,10 @@ export class Character {
       onComplete: () => {
         this._direction = DIRECTION.NONE;
         this._isMoving = false;
-        this._phaserGameObject.anims.stop();
+        if (this._phaserGameObject && this._phaserGameObject.active) {
+          this._phaserGameObject.anims.stop();
+        }
+
         this._previousTargetPosition = { ...this._targetPosition };
         if (this._spriteGridMovementFinishedCallback) {
           this._spriteGridMovementFinishedCallback();
@@ -116,6 +116,9 @@ export class Character {
   }
 
   destroy() {
+  if (this._phaserGameObject) {
     this._phaserGameObject.destroy();
+    this._phaserGameObject = null;
   }
+}
 }
