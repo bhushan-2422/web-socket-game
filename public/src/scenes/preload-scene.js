@@ -3,6 +3,7 @@ import { DataUtils } from "../utils/data-utils.js";
 import {
   CHARACTER_ASSET_KEY,
   DATA_ASSET_KEYS,
+  HEALTH_BAR_ASSET_KEYS,
   WORLD_ASSET_KEYS,
 } from "./asset-keys.js";
 import { SCENE_KEYS } from "./scene-keys.js";
@@ -81,9 +82,29 @@ export class PreloadScene extends Phaser.Scene {
       DATA_ASSET_KEYS.ANIMATIONS,
       "src/assets/data/animations.json",
     );
+
+
+    const healthbarPath = 'src/assets/images/kenneys-assets/ui-space-expansion/ui-space-expansion';
+    //Player health bar
+        this.load.image(
+            WORLD_ASSET_KEYS.PLAYER_HEALTH_BAR, `${healthbarPath}/custom-ui.png`
+        );
+
+        this.load.image(
+            HEALTH_BAR_ASSET_KEYS.RIGHT_CAP, `${healthbarPath}/barHorizontal_green_right.png`
+        );
+
+        this.load.image(
+           HEALTH_BAR_ASSET_KEYS.MIDDLE, `${healthbarPath}/barHorizontal_green_mid.png`
+        );
+
+        this.load.image(
+           HEALTH_BAR_ASSET_KEYS.LEFT_CAP, `${healthbarPath}/barHorizontal_green_left.png`
+        );
   }
 
   create() {
+
     console.log("create");
     this.#createAnimations(CHARACTER_ASSET_KEY.PLAYER1);
     this.#createAnimations(CHARACTER_ASSET_KEY.PLAYER2);

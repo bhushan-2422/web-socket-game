@@ -2,7 +2,8 @@ export const WORLD_ASSET_KEYS = Object.freeze({
     WORLD_BACKGROUND: "WORLD_BACKGROUND",
     WORLD_MAIN_LEVEL: "WORLD_MAIN_LEVEL",
     WORLD_COLLISION: "WORLD_COLLISION",
-    EXIT_DOOR: "EXIT_DOOR"
+    EXIT_DOOR: "EXIT_DOOR",
+    PLAYER_HEALTH_BAR: 'HEALTH_BACK_BACKGROUND',
 })
 
 export const CHARACTER_ASSET_KEY = Object.freeze({
@@ -15,6 +16,12 @@ export const CHARACTER_ASSET_KEY = Object.freeze({
 
 export const DATA_ASSET_KEYS = Object.freeze({
     ANIMATIONS : 'ANIMATIONS'
+})
+
+export const HEALTH_BAR_ASSET_KEYS = Object.freeze({
+    LEFT_CAP: 'LEFT_CAP',
+    RIGHT_CAP: 'RIGHT_CAP',
+    MIDDLE: 'MIDDLE'
 })
 
 export const CHARACTER_SPRITE_KEYS = []

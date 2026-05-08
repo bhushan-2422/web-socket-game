@@ -6,7 +6,7 @@ import { getSocket } from "../lib/socket.js";
 // import socket from "../main.js";
 import { Controls } from "../utils/controls.js";
 import { Player } from "../world/characters/player.js";
-import { WORLD_ASSET_KEYS } from "./asset-keys.js";
+import { HEALTH_BAR_ASSET_KEYS, WORLD_ASSET_KEYS } from "./asset-keys.js";
 import { SCENE_KEYS } from "./scene-keys.js";
 
 const TILE_SIZE = 64;
@@ -17,9 +17,14 @@ const PLAYER_POSITION = Object.freeze({
 
 export class WorldScene extends Phaser.Scene {
   #Localplayer;
+  #LocalplayerName;
   #players;
   #controls;
   #assetKeyIndex = 1;
+  #healthMiddle;
+  #healthRightCap;
+  #healthLeftWidth;
+  #healthBarX;
   constructor() {
     super({
       key: SCENE_KEYS.WORLD_SCENE,
@@ -28,9 +33,8 @@ export class WorldScene extends Phaser.Scene {
   }
 
   init(data) {
-    console.log(data)
+    console.log(data);
     this.exits = data.exits; // received from server
-
   }
 
   create() {
@@ -60,11 +64,11 @@ export class WorldScene extends Phaser.Scene {
     collisionLayer.setAlpha(TILED_COLLISION_LAYER_ALPHA).setDepth(2);
     this.add.image(0, 0, WORLD_ASSET_KEYS.WORLD_BACKGROUND, 0).setOrigin(0);
     this.exits.forEach((exit) => {
-            const x = exit.x * TILE_SIZE;
-            const y = exit.y * TILE_SIZE;
+      const x = exit.x * TILE_SIZE;
+      const y = exit.y * TILE_SIZE;
 
-            this.add.image(x, y, WORLD_ASSET_KEYS.EXIT_DOOR,0).setOrigin(0);
-        });
+      this.add.image(x, y, WORLD_ASSET_KEYS.EXIT_DOOR, 0).setOrigin(0);
+    });
 
     this.#controls = new Controls(this);
 
@@ -96,6 +100,46 @@ export class WorldScene extends Phaser.Scene {
     socket.on("player_joined", (player) => {
       console.log("player joined");
     });
+
+    const background = this.add
+      .image(10, 10, WORLD_ASSET_KEYS.PLAYER_HEALTH_BAR)
+      .setOrigin(0)
+      .setScrollFactor(0)
+      .setScale(0.5);
+
+    const healthBar = this.#createHealth(15, 48);
+  }
+
+  #createHealth(x, y) {
+    this.#healthBarX = x;
+    const scaleY = 0.7;
+
+    const leftCap = this.add
+      .image(x, y, HEALTH_BAR_ASSET_KEYS.LEFT_CAP)
+      .setOrigin(0, 0.5)
+      .setScale(1, scaleY)
+      .setScrollFactor(0);
+
+    this.#healthMiddle = this.add
+      .image(x + leftCap.width, y, HEALTH_BAR_ASSET_KEYS.MIDDLE)
+      .setOrigin(0, 0.5)
+      .setScale(1, scaleY)
+      .setScrollFactor(0);
+
+    this.#healthMiddle.displayWidth = 200;
+
+    const rightCap = this.add
+      .image(
+        x + leftCap.width + this.#healthMiddle.displayWidth,
+        y,
+        HEALTH_BAR_ASSET_KEYS.RIGHT_CAP,
+      )
+      .setOrigin(0, 0.5)
+      .setScale(1, scaleY)
+      .setScrollFactor(0);
+
+    this.#healthRightCap = rightCap;
+    this.#healthLeftWidth = leftCap.width;
   }
 
   update() {
@@ -119,13 +163,12 @@ export class WorldScene extends Phaser.Scene {
       incomingIds.add(id);
 
       if (!this.#players.has(id)) {
-
         const index = this.#assetKeyIndex++;
-        if(index == 4) this.#assetKeyIndex = 1;
+        if (index == 4) this.#assetKeyIndex = 1;
 
         const newPlayer = new Player({
           scene: this,
-          assetKey : `PLAYER${index}`,
+          assetKey: `PLAYER${index}`,
           position: { x: data.x, y: data.y },
           direction: data.direction || DIRECTION.DOWN,
           collisionLayer: collisionLayer,
@@ -135,12 +178,26 @@ export class WorldScene extends Phaser.Scene {
         this.#players.set(id, newPlayer);
 
         if (id === socket.id) {
+          this.#LocalplayerName = this.add
+            .text(25, 12, data.name, { fontSize: "20px", color: "#ffffff" })
+            .setScrollFactor(0);
           this.#Localplayer = newPlayer;
           this.cameras.main.startFollow(this.#Localplayer._phaserGameObject);
         }
       } else {
         if (id === socket.id) {
           this.#Localplayer.setHealth(data.health);
+
+          const MAX_HEALTH = 100;
+          const MAX_BAR_WIDTH = 200;
+
+          this.#healthMiddle.displayWidth =
+            (data.health / MAX_HEALTH) * MAX_BAR_WIDTH;
+          this.#healthRightCap.x =
+            this.#healthBarX +
+            this.#healthLeftWidth +
+            this.#healthMiddle.displayWidth;
+
           const isDamage = data.tookDamage;
           const isDangerActive = this.#Localplayer._isDangerActive;
           console.log(data);
