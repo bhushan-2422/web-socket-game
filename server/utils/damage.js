@@ -1,4 +1,7 @@
 //postion (x,y,width, height)
+
+const SMOKE_DAMAGE = 5
+const FIRE_DAMAGE = 10
 export const fireAndSmokeArray = [
   {
     x: 6,
@@ -6,7 +9,7 @@ export const fireAndSmokeArray = [
     width: 4,
     height: 6,
     type: "smoke",
-    damage: 2,
+    damage: SMOKE_DAMAGE,
   },
   {
     x: 20,
@@ -14,7 +17,7 @@ export const fireAndSmokeArray = [
     width: 3,
     height: 7,
     type: "smoke",
-    damage: 2,
+    damage: SMOKE_DAMAGE,
   },
   {
     x: 1,
@@ -22,7 +25,7 @@ export const fireAndSmokeArray = [
     width: 6,
     height: 8,
     type: "smoke",
-    damage: 2,
+    damage: SMOKE_DAMAGE,
   },
   {
     x: 42,
@@ -30,7 +33,7 @@ export const fireAndSmokeArray = [
     width: 7,
     height: 7,
     type: "smoke",
-    damage: 2,
+    damage: SMOKE_DAMAGE,
   },
   {
     x: 20,
@@ -38,7 +41,7 @@ export const fireAndSmokeArray = [
     width: 10,
     height: 7,
     type: "smoke",
-    damage: 2,
+    damage: SMOKE_DAMAGE,
   },
   {
     x: 27,
@@ -46,7 +49,7 @@ export const fireAndSmokeArray = [
     width: 3,
     height: 4,
     type: "fire",
-    damage: 5,
+    damage: FIRE_DAMAGE,
   },
   {
     x: 41,
@@ -54,7 +57,7 @@ export const fireAndSmokeArray = [
     width: 4,
     height: 6,
     type: "fire",
-    damage: 5,
+    damage: FIRE_DAMAGE,
   },
   {
     x: 11,
@@ -62,7 +65,7 @@ export const fireAndSmokeArray = [
     width: 8,
     height: 3,
     type: "fire",
-    damage: 5,
+    damage: FIRE_DAMAGE,
   },
   {
     x: 32,
@@ -70,7 +73,7 @@ export const fireAndSmokeArray = [
     width: 8,
     height: 4,
     type: "fire",
-    damage: 5,
+    damage: FIRE_DAMAGE,
   },
   {
     x: 47,
@@ -78,7 +81,7 @@ export const fireAndSmokeArray = [
     width: 3,
     height: 6,
     type: "fire",
-    damage: 5,
+    damage: FIRE_DAMAGE,
   },
   {
     x: 10,
@@ -86,7 +89,7 @@ export const fireAndSmokeArray = [
     width: 7,
     height: 4,
     type: "fire",
-    damage: 5,
+    damage: FIRE_DAMAGE,
   },
   {
     x: 38,
@@ -94,7 +97,7 @@ export const fireAndSmokeArray = [
     width: 7,
     height: 4,
     type: "fire",
-    damage: 5,
+    damage: FIRE_DAMAGE,
   },
   {
     x: 22,
@@ -102,7 +105,7 @@ export const fireAndSmokeArray = [
     width: 7,
     height: 4,
     type: "fire",
-    damage: 5,
+    damage: FIRE_DAMAGE,
   },
   {
     x: 41,
@@ -110,7 +113,7 @@ export const fireAndSmokeArray = [
     width: 8,
     height: 6,
     type: "fire",
-    damage: 5,
+    damage: FIRE_DAMAGE,
   },
   {
     x: 27,
@@ -118,7 +121,7 @@ export const fireAndSmokeArray = [
     width: 3,
     height: 7,
     type: "fire",
-    damage: 5,
+    damage: FIRE_DAMAGE,
   },
 ];
 

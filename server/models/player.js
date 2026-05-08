@@ -26,7 +26,7 @@ class Player {
     this.tookDamage = false;
     this.lastDamageTime = Date.now();
 
-    this.startTime = Date.now();
+    this.startTime;
     this.isExited = false;
     // this.assetKey = `PLAYER${assetKeyIdx}`
   }
@@ -99,13 +99,12 @@ class Player {
         this.isExited = true;
         const timeTaken = Date.now() - this.startTime;
         room.addExitTime(timeTaken);
-        
         return true;
       }
     } 
   }
 
-  checkDead(room){
+  checkDead(){
     if(this.health <= 0){
       
       return true;

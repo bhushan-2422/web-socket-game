@@ -493,6 +493,96 @@
         color: #000;
         box-shadow: 0 0 10px #00e5ff;
       }
+
+      .leaderboard-btn {
+        margin-bottom: 20px;
+        z-index: 2;
+      }
+
+      .lobby-panel {
+        position: fixed;
+
+        top: 0;
+        right: -350px;
+
+        width: 320px;
+        height: 100vh;
+
+        background: rgba(5, 10, 20, 0.97);
+
+        border-left: 1px solid #1e3a5f;
+
+        padding: 20px;
+
+        transition: right 0.3s ease;
+
+        z-index: 100;
+
+        display: flex;
+        flex-direction: column;
+      }
+
+      .lobby-panel.show {
+        right: 0;
+      }
+
+      .lobby-panel h3 {
+        color: #00e5ff;
+        margin-bottom: 20px;
+        font-family: "Orbitron";
+      }
+
+      #top-teams {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        margin-top: 10px;
+        overflow-y: auto;
+      }
+
+      .team-card {
+        background: rgba(10, 20, 40, 0.88);
+
+        border: 2px solid #00ff88;
+
+        border-radius: 12px;
+
+        padding: 16px;
+
+        box-shadow: 0 0 12px rgba(0, 255, 136, 0.25);
+
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .team-card:hover {
+        transform: translateY(-2px);
+
+        box-shadow: 0 0 18px rgba(0, 255, 136, 0.45);
+      }
+
+      .team-card h3 {
+        color: #00e5ff;
+
+        font-size: 24px;
+
+        margin-bottom: 14px;
+
+        font-family: "Orbitron";
+
+        text-shadow: 0 0 8px #00e5ff;
+      }
+
+      .team-card p {
+        font-size: 15px;
+
+        margin: 8px 0;
+
+        color: #d8e6ff;
+
+        line-height: 1.5;
+      }
     </style>
   </head>
 
@@ -506,6 +596,7 @@
       <div class="logo-tag">△ ARENA ONLINE</div>
       <h1>GAME <span>LOBBY</span></h1>
       <p class="subtitle">ENTER YOUR CREDENTIALS & JOIN THE BATTLE</p>
+      <button id="leaderboardBtn" class="leaderboard-btn">🏆 TOP TEAMS</button>
 
       <div class="card">
         <div class="corner-tr"></div>
@@ -535,6 +626,12 @@
 
         <div class="divider">Players in lobby</div>
         <div class="player-slot" id="players"></div>
+      </div>
+
+      <div id="leaderboardPanel" class="lobby-panel">
+        <h3>🏆 TOP TEAMS</h3>
+
+        <div id="top-teams"></div>
       </div>
     </div>
 

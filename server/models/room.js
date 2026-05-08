@@ -9,6 +9,10 @@ class Room{
         this.state = "WAITING"
         this.exits = this.createExits()
         this.avgTime = 0;
+        this.gameStartTime;
+        this.timeToEscape = 0;
+        this.escapedPlayers = 0;
+        this.totalEscapeTime = 0;
     }
 
     isPlayerExist(socket){
@@ -25,7 +29,11 @@ class Room{
     }
 
     addExitTime(time){
-        this.avgTime += time/this.players.length;
+        this.totalEscapeTime += time;
+        this.escapedPlayers++;
+
+        this.avgTime =
+            this.totalEscapeTime / this.escapedPlayers;
     }
 }
 

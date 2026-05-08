@@ -7,7 +7,7 @@ const leaderBoardSchema = new Schema(
             type: String,
             required: true
         },
-        maxPlayers:{
+        minPlayers:{
             type: Number,
             required: true
         },

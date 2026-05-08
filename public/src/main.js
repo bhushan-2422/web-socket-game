@@ -102,33 +102,35 @@ document.getElementById("create-room").addEventListener("submit", (e) => {
     startGame(room);
   });
 
-  socket.on("player-exited", ({ playerId, timeTaken }) => {
+  socket.on("player-exited", ({ playerId, timeTaken, avgTime }) => {
     if (playerId !== socket.id) return;
 
     destroyGame();
     document.getElementById("your-time").textContent =
       (timeTaken / 1000).toFixed(2) + "s";
+
+    document.getElementById("avg-time").textContent =
+      (avgTime / 1000).toFixed(2) + "s";
     show(screenExit);
   });
 
-  socket.on("player-dead",({ playerId, timeTaken })=>{
+  socket.on("player-dead", ({ playerId, timeTaken, avgTime }) => {
     if (playerId !== socket.id) return;
 
     destroyGame();
     document.getElementById("exitTag").textContent = "you are dead";
     document.getElementById("your-time").textContent =
       (timeTaken / 1000).toFixed(2) + "s";
+    document.getElementById("avg-time").textContent =
+      (avgTime / 1000).toFixed(2) + "s";
     show(screenExit);
-  })
+  });
 
   // ── Socket listener (add this inside your socket.on("connect") block) ─────────
-socket.on("chat-message", ({ senderId, senderName, text }) => {
-  const isMine = senderId === socket.id;
-  appendMessage(senderName, text, isMine);
-});
-
-
-  
+  socket.on("chat-message", ({ senderId, senderName, text }) => {
+    const isMine = senderId === socket.id;
+    appendMessage(senderName, text, isMine);
+  });
 });
 
 const messagesDiv = document.getElementById("messages");
@@ -189,5 +191,64 @@ document.getElementById("menuBtn").onclick = () => {
 document.getElementById("chatBtn").onclick = () => {
   document.getElementById("chatPanel").classList.toggle("show");
 };
+
+document.getElementById("leaderboardBtn").onclick = () => {
+  document.getElementById("leaderboardPanel").classList.toggle("show");
+};
+
+//functions
+async function fetchLeaderBoard() {
+  try {
+    const response = await fetch("/api/v1/fetchLeaderBoardData");
+
+    const result = await response.json();
+
+    renderTopTeams(result.data);
+  } catch (e) {
+    console.log("leaderboard err: ", e);
+  }
+}
+
+function renderTopTeams(teams) {
+  const container = document.getElementById("top-teams");
+
+  container.innerHTML = "";
+
+  teams.forEach((team, idx) => {
+    const div = document.createElement("div");
+
+    div.className = "team-card";
+
+    div.innerHTML = `
+      <h3>
+        #${idx + 1} ${team.roomName}
+      </h3>
+
+      <p>
+        <strong>Players:</strong>
+        ${team.players.join(", ")}
+      </p>
+
+      <p>
+        <strong>Average Escape Time:</strong>
+        ${(team.avgTimeToEscape / 1000).toFixed(2)}s
+      </p>
+
+      <p>
+        <strong>Total Game Time:</strong>
+        ${(team.timeToEscape / 1000).toFixed(2)}s
+      </p>
+
+      <p>
+        <strong>Total Players:</strong>
+        ${team.players.length}
+      </p>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+fetchLeaderBoard();
 
 export default socket;

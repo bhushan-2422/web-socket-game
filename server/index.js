@@ -8,6 +8,7 @@ import { Player } from "./models/player.js";
 import { Room } from "./models/room.js";
 import { fireAndSmokeArray } from "./utils/damage.js";
 import connectDB from "./db/index.js";
+import { fetchLeaderBoardData, saveData } from "./httpController/leaderBoard.controller.js";
 
 dotenv.config();
 
@@ -24,6 +25,24 @@ app.use(express.static(join(__dirname, "../public")));
 
 app.get("/", (req, res) => {
   res.sendFile(join(__dirname, "../public/index.html"));
+});
+
+app.get("/api/v1/fetchLeaderBoardData", async (req, res) => {
+
+    try {
+        const leaderBoardData =
+            await fetchLeaderBoardData();
+        res.status(200).json({
+            success: true,
+            data: leaderBoardData
+        });
+    } catch (e) {
+        console.log("err while fetching api data: ", e);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
 });
 
 const players = {};
@@ -65,7 +84,12 @@ io.on("connection", (socket) => {
     if (!room.isFilled()) {
       io.to(roomId).emit("waiting", room.players);
     } else {
+      
+      room.players.forEach((player) => {
+        player.startTime = Date.now();
+      });
       room.state = "playing";
+      room.gameStartTime = Date.now();
       io.to(roomId).emit("start-game", room);
     }
   });
@@ -83,12 +107,15 @@ io.on("connection", (socket) => {
     if (player.checkReachedExit(room)) {
       io.to(roomId).emit("player-exited", {
         playerId: player.id,
-        timeTaken: room.avgTime,
+        timeTaken: Date.now() - player.startTime,
+        avgTime: room.avgTime
       });
-    } else if (player.checkDead(room)) {
+    } 
+    else if (player.checkDead(room)) {
       io.to(roomId).emit("player-dead", {
         playerId: player.id,
-        timeTaken: room.avgTime,
+        timeTaken: Date.now() - player.startTime,
+        avgTime: room.avgTime
       });
     }
 
@@ -116,7 +143,12 @@ io.on("connection", (socket) => {
     // decrease active players
     room.activePlayers -= 1;
     // delete empty room
+
     if (room.activePlayers <= 0) {
+      
+      room.timeToEscape = Date.now() - room.gameStartTime;
+      console.log("rooms before delete: ",room)
+      saveData(room);
       delete rooms[roomId];
       console.log(`Room ${roomId} deleted`);
       return;
@@ -136,11 +168,11 @@ io.on("connection", (socket) => {
 });
 
 connectDB()
-.then(() => {
-  server.listen(PORT, () => {
-    console.log("app is running on: ", PORT);
+  .then(() => {
+    server.listen(PORT, () => {
+      console.log("app is running on: ", PORT);
+    });
+  })
+  .catch((e) => {
+    console.log("mongo db connection failed with err: ", e);
   });
-})
-.catch((e)=>{
-  console.log("mongo db connection failed with err: ",e);
-});
